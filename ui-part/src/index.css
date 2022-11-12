@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: Lekton;
+    src: url(assets/fonts/lekton005_l.otf);
+}
+
+@font-face {
+    font-family: Zector;
+    src: url(assets/fonts/Zector.ttf);
+}
+
+.font-zector {
+    font-family: Zector;
+}
+
+.font-lekton {
+    font-family: Lekton;
+}
