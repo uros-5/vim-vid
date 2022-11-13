@@ -2,7 +2,7 @@
     
     <div class="row-start-2 col-start-3 font-zector font-bold">
         <div class="flex flex-row p-2 ml-5 justify-around gap-2">
-            <button v-for="i in [1,2,3]" class="p-1 bg-slate-600 shadow shadow-slate-600 rounded-sm">
+            <button @click="store.addActionToOthers(i-1)" v-for="i in [1,2,3]" class="p-1 bg-slate-600 hover:bg-slate-500 shadow shadow-slate-600 transition hover:transition-colors rounded-sm">
                 <span class="px-1">{{ i }}</span>
             </button>
         </div>
@@ -12,7 +12,9 @@
 </template>
 
 <script setup lang="ts">
+import { useFootballStore } from '@/stores/footballStore';
 import DeleteLastRowButton from './DeleteLastRowButton.vue';
 
+const store = useFootballStore();
 
 </script>
