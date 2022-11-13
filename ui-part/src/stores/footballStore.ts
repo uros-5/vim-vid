@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, reactive } from 'vue'
 import { defineStore } from 'pinia'
 import { timeAgo } from '@/plugins/timeAgo';
 
@@ -8,7 +8,8 @@ export const useFootballStore = defineStore('football', {
     },
     actions: {
         onLoad() {
-            if (this.$state.currentClock.running) {
+            if (this.$state.currentClock.running == true) {
+                this.$state.currentClock.running = false;
                 this.startClock();
             }
         },
@@ -30,6 +31,7 @@ export const useFootballStore = defineStore('football', {
             let time = timeAgo(this.$state.currentClock.ms - 1000);
             this.$state.currentAction.min = time.minutes;
             this.$state.currentAction.sec = time.seconds;
+            this.saveLocalStorage();
             let a = 0;
             let self = this;
             let ins = setInterval(() => {
@@ -45,7 +47,7 @@ export const useFootballStore = defineStore('football', {
 
         stopAction() {
             this.$state.currentAction.active = false;
-            let time = this.timeAgo();
+            //let time = this.timeAgo();
         },
 
         toggleAction() {
@@ -66,6 +68,7 @@ export const useFootballStore = defineStore('football', {
             this.$state.currentAction.id = this.createId();
             this.games[player].highlights.push(Object.assign({}, this.$state.currentAction));
             this.emptyAction();
+            this.saveLocalStorage();
         },
 
         emptyAction() {
@@ -85,6 +88,7 @@ export const useFootballStore = defineStore('football', {
             let lastAction = this.lastAction();
             if (lastAction != undefined) {
                 this.$state.games[player].highlights = this.$state.games[player].highlights.filter(item => item.id != lastAction?.id);
+                this.saveLocalStorage();
             }
         },
 
@@ -94,8 +98,8 @@ export const useFootballStore = defineStore('football', {
             let highlights = this.$state.games[index].highlights;
             let exist = highlights.find(item => item.id == lastAction?.id);
             if (exist == undefined) {
-
                 this.$state.games[index].highlights.push(Object.assign({}, lastAction));
+                this.saveLocalStorage();
             }
         },
 
@@ -104,24 +108,9 @@ export const useFootballStore = defineStore('football', {
             let player = this.$state.selectedPlayer;
             this.deleteLastAction();
             this.$state.games[player].highlights = [last, ...this.$state.games[player].highlights];
+            this.saveLocalStorage();
         },
 
-
-        addFirstAction() {
-
-        },
-
-        deleteAll() {
-
-        },
-
-        changeTabName() {
-
-        },
-
-        deleteOnePlayer() {
-
-        },
 
         zenMode() {
             let zen = this.isZen();
@@ -142,8 +131,14 @@ export const useFootballStore = defineStore('football', {
 
         },
 
+        deletePlayer(id: number) {
+            this.$state.games[id] = emptyGame();
+            this.saveLocalStorage();
+        },
+
         changeHalftime(index: number) {
             this.$state.currentHalfTime = index as 1 | 2 | 3 | 4 | 5;
+            this.saveLocalStorage();
         },
 
         currentHalfTime(): number {
@@ -179,9 +174,9 @@ export const useFootballStore = defineStore('football', {
             }
             else {
                 let loadedItem: GamesStore = JSON.parse(item);
-                console.log(this, loadedItem);
+                loadedItem = reactive(loadedItem);
                 this.$state.currentAction = loadedItem.currentAction;
-                this.$state.currentClock = Object.assign({}, loadedItem.currentClock);
+                this.$state.currentClock = loadedItem.currentClock; 
                 this.$state.currentHalfTime = loadedItem.currentHalfTime;
                 this.$state.games = loadedItem.games;
                 this.$state.modal = loadedItem.modal;
@@ -189,7 +184,6 @@ export const useFootballStore = defineStore('football', {
                 this.$state.zen = loadedItem.zen;
                 this.onLoad();
             }
-
         },
 
         saveLocalStorage() {
@@ -235,8 +229,10 @@ export const useFootballStore = defineStore('football', {
         },
 
         startClock() {
+            if (this.$state.currentClock.running == true) { return; }
             this.$state.currentClock.running = true;
             let self = this;
+            this.$state.currentClock.ms += 1000;
             let clockInterval = setInterval(() => {
                 this.$state.currentClock.ms += 1000;
                 this.$state.currentClock.id = clockInterval;
@@ -257,6 +253,7 @@ export const useFootballStore = defineStore('football', {
                     case 5: minute = 130; break;
                 }
                 this.$state.currentClock.ms = minute * 60000;
+                this.saveLocalStorage();
             }
         },
 
@@ -267,14 +264,13 @@ export const useFootballStore = defineStore('football', {
 
         setClock(min: number, sec: number) {
             this.$state.currentClock.ms = min * 60_000 + sec * 1000;
+            this.saveLocalStorage();
         },
 
         fileName(): string {
             let name = this.$state.games[this.$state.selectedPlayer].match_info.title;
-            return name == "" ? "Player.json" : `${name}.json`;
+            return name == "" ? `Player${this.$state.selectedPlayer}.json` : `${name}.json`;
         }
-
-
     },
     getters: {
 

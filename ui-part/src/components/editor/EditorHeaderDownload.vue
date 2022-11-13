@@ -15,10 +15,6 @@ const store = useFootballStore();
 
 const url = ref("");
 
-function mouseover() {
-    let file = store.downloadPlayer();
-}
-
 </script>
 
 <style scoped>

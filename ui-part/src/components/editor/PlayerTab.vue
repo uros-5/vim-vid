@@ -8,7 +8,7 @@
             <button @click="store.enableModal(1)">
                 <InlineSvg :src="textIcon" />
             </button>
-            <button>
+            <button @click="store.deletePlayer(id)">
                 <InlineSvg :src="delIcon" />
             </button>
         </div>

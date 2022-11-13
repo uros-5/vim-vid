@@ -27,10 +27,13 @@ function format(m: number): string {
 const store = useFootballStore();
 const ms = ref(store.$state.currentClock);
 
-watch(store.$state.currentClock, async(old,newer) => {
-    let ta = timeAgo(newer.ms);
-    min.value = format(ta.minutes);
-    sec.value = format(ta.seconds);
+watch(store.$state, async (old, newer) => {
+    if (newer.currentClock.running == true) {
+        let ta = timeAgo(newer.currentClock.ms);
+        min.value = format(ta.minutes);
+        sec.value = format(ta.seconds);
+    }
+
 })
 
 </script>

@@ -1,9 +1,9 @@
 <template>
     <div class="row-start-3 col-span-3 flex flex-col items-center justify-center">
         <div class="flex flex-row gap-3">
-           <input v-model="store.$state.currentAction.min" class="bg-slate-700 rounded" type="text" size="3" maxlength="3" /> 
-           <input v-model="store.$state.currentAction.sec" class="bg-slate-700 rounded" type="text" size="3" maxlength="3"/> 
-           <input v-model="store.$state.currentAction.to_add" class="bg-slate-700 rounded" type="text" size="3" maxlength="3"/> 
+           <input disabled v-model="store.$state.currentAction.min" class="bg-slate-700 rounded" type="text" size="3" maxlength="3" /> 
+           <input disabled v-model="store.$state.currentAction.sec" class="bg-slate-700 rounded" type="text" size="3" maxlength="3"/> 
+           <input disabled v-model="store.$state.currentAction.to_add" class="bg-slate-700 rounded" type="text" size="3" maxlength="3"/> 
         </div>
         <button class="p-2 text-2xl">
             <InlineSvg :src="icon" />
