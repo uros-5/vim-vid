@@ -6,9 +6,9 @@
         <EditorHeader />
         <StartStopButton />
         <MoveHighlightsButtons v-if="store.isZen() == false" />
-        <HighlightsInput v-if="store.isZen() == false" />
         <PlayerTabs v-if="store.isZen() == false" />
         <GameOptions />
+        <HighlightsInput v-if="store.isZen() == false" />
     </section>
 </template>
 
