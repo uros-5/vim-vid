@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-row text-5xl font-zector font-extrabold">
+    <div @click="store.toggleClock()" class="flex flex-row text-5xl font-zector font-extrabold cursor-pointer active:text-slate-600">
         <div>{{ min }}</div>
         <div>:</div>
         <div>{{ sec }}</div>
@@ -29,7 +29,7 @@ const ms = ref(store.$state.currentClock);
 
 watch(store.$state, async (old, newer) => {
     if (newer.currentClock.running == true) {
-        let ta = timeAgo(newer.currentClock.ms);
+        let ta = timeAgo(newer.currentClock.ms, false);
         min.value = format(ta.minutes);
         sec.value = format(ta.seconds);
     }
