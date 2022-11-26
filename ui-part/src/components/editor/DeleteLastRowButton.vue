@@ -1,6 +1,6 @@
 <template>
 
-    <button @click="store.deleteLastAction()" class="text-xl text-center px-4">Delete</button>
+    <button @click="store.deleteLastAction()" class="text-xl text-center py-3 text-red-300">Delete</button>
 
 </template>
 

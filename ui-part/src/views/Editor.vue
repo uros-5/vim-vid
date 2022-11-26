@@ -5,8 +5,8 @@
         :class="{ 'opacity-8': store.anyModal() }">
         <EditorHeader />
         <StartStopButton />
-        <MoveHighlightsButtons v-if="store.isZen() == false" />
         <PlayerTabs v-if="store.isZen() == false" />
+        <MoveHighlightsButtons v-if="store.isZen() == false" />
         <GameOptions />
         <HighlightsInput v-if="store.isZen() == false" />
     </section>
@@ -28,7 +28,6 @@ const store = useFootballStore();
 
 onMounted(() => {
     store.checkLocalStorage();
-
 })
 
 </script>
