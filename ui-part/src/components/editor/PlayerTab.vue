@@ -1,5 +1,5 @@
 <template>
-    <div class="border-2 border-solid border-black py-3 cursor-pointer"
+    <div class="border-2 border-solid border-black py-5 cursor-pointer"
         :class="{ 'border-white': store.selectedPlayer() == id, 'bg-slate-300 text-slate-900': store.isActive() }">
         <div class="text-center my-9">
             {{ name() }}
@@ -7,9 +7,6 @@
         <div class="flex justify-around gap-3">
             <button @click="store.enableModal(1)">
                 <InlineSvg :src="textIcon" />
-            </button>
-            <button @click="store.deletePlayer(id)">
-                <InlineSvg :src="delIcon" />
             </button>
         </div>
     </div>

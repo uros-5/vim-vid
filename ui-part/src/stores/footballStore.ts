@@ -9,6 +9,7 @@ export const useFootballStore = defineStore('football', {
     },
     actions: {
         onLoad() {
+            if (this.$state.current_editor == 1) { return; }
             if (this.$state.editors[this.editor()].currentClock.running == true) {
                 this.$state.editors[this.editor()].currentClock.running = false;
                 this.startClock();
@@ -16,7 +17,7 @@ export const useFootballStore = defineStore('football', {
         },
 
         selectPlayer(id: number) {
-            this.$state.editors[this.editor()].selectedPlayer = (id) as 0 | 1 | 2;
+            this.$state.editors[this.editor()].selectedPlayer = (id) as Player;
         },
 
         selectedPlayer() {
@@ -29,12 +30,14 @@ export const useFootballStore = defineStore('football', {
 
         startAction() {
             this.$state.editors[this.editor()].currentAction.active = true;
-            let time = timeAgo(this.$state.editors[this.editor()].currentClock.ms - 500, true);
+            let m = this.editor() == 0 ? 500 : 0;
+            let time = timeAgo(this.$state.editors[this.editor()].currentClock.ms - m, true);
             this.$state.editors[this.editor()].currentAction.min = time.minutes;
             this.$state.editors[this.editor()].currentAction.sec = time.seconds;
             this.saveLocalStorage();
             let a = 0;
             let self = this;
+            if (this.editor() == 1) { return }
             let ins = setInterval(() => {
                 a += 200;
                 if (self.$state.editors[this.editor()].currentAction.active == false) {
@@ -43,7 +46,6 @@ export const useFootballStore = defineStore('football', {
                     self.saveAction()
                     clearInterval(ins);
                     play("stop");
-
                 }
             }, 200);
         },
@@ -55,7 +57,7 @@ export const useFootballStore = defineStore('football', {
 
         toggleAction(id: number) {
             if (this.$state.editors[this.editor()].currentClock.running == false) { return; }
-            this.$state.editors[this.editor()].selectedPlayer = id as 0 | 1 | 2;
+            this.$state.editors[this.editor()].selectedPlayer = id as Player; 
             let active = this.isActive();
             this.$state.editors[this.editor()].currentAction.active = !active;
             active = this.isActive();
@@ -71,10 +73,31 @@ export const useFootballStore = defineStore('football', {
         saveAction() {
             let player = this.$state.editors[this.editor()].selectedPlayer;
             this.$state.editors[this.editor()].currentAction.id = this.createId();
-            console.log(this.$state.editors[this.editor()].currentAction);
-            this.$state.editors[this.editor()].games[player].highlights.push(Object.assign({}, this.$state.editors[this.editor()].currentAction));
+            this.$state.editors[this.editor()].games[player]!.highlights.push(Object.assign({}, this.$state.editors[this.editor()].currentAction));
             this.emptyAction();
             this.saveLocalStorage();
+        },
+
+        newReplayAction() {
+            let active = this.$state.editors[this.editor()].currentAction.active;
+            if (active == false) {
+                play("start")
+                this.$state.editors[this.editor()].currentAction.halftime = this.$state.editors[this.editor()].currentHalfTime;
+                this.$state.editors[this.editor()].currentAction.active = true;
+                this.$state.startedAction = this.$state.video!.currentTime!;
+                this.$state.editors[this.editor()].currentClock.ms = this.calculateStartSeconds() * 1000;
+                this.startAction();
+                return false;
+            }
+            else {
+                let time = timeAgo((this.$state.video?.currentTime! - this.$state.startedAction) * 1000, true);
+                this.$state.editors[this.editor()].currentAction.to_add = (time.minutes * 60 + time.seconds);
+                this.$state.editors[this.editor()].currentAction.active = false;
+                this.saveAction()
+                play("stop");
+                this.$state.editors[this.editor()].currentAction.active = false;
+                return true;
+            }
         },
 
         emptyAction() {
@@ -140,8 +163,8 @@ export const useFootballStore = defineStore('football', {
         },
 
         deletePlayer(id: number) {
-            if (this.$state.editors[this.editor()].currentClock.running == false) {
-                console.log(id);
+            if (this.$state.editors[this.editor()].currentClock.running == false || this.$state.current_editor == 1) {
+                if (id > 2) { return; }
                 this.$state.editors[this.editor()].games[id] = emptyGame();
                 this.saveLocalStorage();
             }
@@ -178,8 +201,8 @@ export const useFootballStore = defineStore('football', {
             return timeAgo(this.$state.editors[this.editor()].currentClock.ms);
         },
 
-        checkLocalStorage() {
-            let item = localStorage.getItem("games")
+        checkLocalStorage(s: string) {
+            let item = localStorage.getItem(s)
             if (item == null) {
                 this.saveLocalStorage();
             }
@@ -198,8 +221,9 @@ export const useFootballStore = defineStore('football', {
         },
 
         saveLocalStorage() {
+            let item = this.$state.current_editor == 0 ? "games" : "gamesReplay"
             let newItem = JSON.stringify(this.$state.editors[this.editor()]);
-            localStorage.setItem("games", newItem);
+            localStorage.setItem(item, newItem);
         },
 
         randomId(): number {
@@ -296,6 +320,167 @@ export const useFootballStore = defineStore('football', {
 
         editor(): number {
             return this.$state.current_editor;
+        },
+
+        parseCommand(event: KeyboardEvent) {
+            const key = event.key;
+            let command = this.$state.command;
+            if (command != "") {
+                if (command[0] == "T") {
+                    if (key == "Enter") {
+                        this.$state.command = `${command}`;
+                        this.updateName(command.split("T")[1]);
+                        this.$state.command = "";
+                        this.saveLocalStorage();
+                    }
+                    else {
+                        this.$state.command = `${command}${key}`;
+                    }
+                }
+                else if (paramCommands.includes(command[0])) {
+                    if (command[0] == "H") {
+                        if (isNaN(Number(key))) {
+                            this.$state.command = "";
+                        }
+                        else if ([1, 2, 3, 4, 5].includes(Number(key))) {
+                            this.$state.command = `${command}${key}`;
+                            this.$state.editors[this.editor()].currentHalfTime = Number(key) as Halftime; 
+                            this.$state.editors[this.editor()].games[this.selectedPlayer()].match_info.current_halftime = Number(key);
+                            this.saveLocalStorage();
+                            this.$state.command = "";
+                        }
+                    }
+                    else {
+                        if (isNaN(Number(key))) {
+                            this.$state.command = ""
+                        }
+                        else if ([1, 2, 3].includes(Number(key))) {
+                            this.$state.command = `${command}${key}`
+                            this.executeCommand();
+                            this.saveLocalStorage();
+                        }
+                    }
+                }
+            }
+            else {
+                this.$state.command = key;
+                this.executeCommand()
+            }
+        },
+
+        executeCommand() {
+            let command = this.$state.command;
+            let commands: string[] = ["T", "r"].concat(paramCommands).concat(normalCommands);
+            if (this.$state.video == null) { return; }
+            else if (commands.includes(command[0]) == false) {
+                this.$state.command = "";
+                return;
+            }
+            else {
+                switch (command[0]) {
+                    case 'k': {
+                        this.$state.video?.paused ? this.$state.video.play() : this.$state.video?.pause();
+                        break;
+                    }
+                    case '>': this.$state.video.playbackRate += 0.3; break;
+                    case '<': this.$state.video.playbackRate -= 0.3; break;
+                    case 'i': {
+                        if (command.length > 1) {
+                            let id = Number(command[1]);
+                            if (isNaN(id)) {
+                                this.$state.command = "";
+                            }
+                            else {
+                                this.addActionToOthers(id - 1);
+                                this.$state.command = "";
+                                this.saveLocalStorage();
+                            }
+                            break;
+                        }
+                        else {
+                            return;
+                        }
+                    };
+                    case 'l': this.$state.video.currentTime += 3; break;
+                    case 'h': this.$state.video.currentTime -= 3; break;
+                    case 'p': {
+                        if (command.length > 1) {
+                            let id = Number(command[1]);
+                            if (isNaN(id)) {
+                                this.$state.command = "";
+                            }
+                            else {
+                                this.selectPlayer(id - 1);
+                                this.$state.command = "";
+                                this.saveLocalStorage();
+                            }
+                            break;
+                        }
+                        else {
+                            return;
+                        }
+                    };
+                    case 'z': return;
+                    case 'd': {
+                        if (command.length > 1) {
+                            let id = Number(command[1]);
+                            if (isNaN(id)) {
+                                this.$state.command = "";
+                            }
+                            else {
+                                this.deletePlayer(id - 1);
+                                this.$state.command = "";
+                                this.saveLocalStorage();
+                            }
+                            break;
+                        }
+                        else {
+                            return;
+                        }
+                    };
+                    case 'x': this.deleteLastAction(); break;
+                    case 'r': this.newReplayAction(); break;
+                    case 'H': return;
+                    case 'T': {
+                        if (command.length > 1) {
+                        }
+                        else {
+                            return;
+                        }
+                    }
+                }
+                this.$state.command = "";
+            }
+        },
+
+
+
+        startMinutes(): number {
+            if (this.$state.editors[this.editor()].currentHalfTime == 1) {
+                return 0;
+            }
+            else if (this.$state.editors[this.editor()].currentHalfTime == 2) {
+                return 45
+            } if (this.$state.editors[this.editor()].currentHalfTime == 3) {
+                return 90
+            }
+            else if (this.$state.editors[this.editor()].currentHalfTime == 4) {
+                return 105
+            }
+            else if (this.$state.editors[this.editor()].currentHalfTime == 5) {
+                return 120
+            }
+            return 0
+        },
+
+        calculateStartSeconds(): number {
+            let editor = this.$state.editors[this.editor()];
+            let halftime: number | { min: number, sec: number } = editor.games[this.selectedPlayer()].match_info.start_halftime[editor.currentHalfTime - 1];
+            halftime = halftime.min * 60 + halftime.sec;
+            let action = timeAgo((this.$state.startedAction - halftime) * 1000, true);
+            let calculated = (this.startMinutes() * 60) + action.minutes * 60 + action.seconds
+            return calculated
+            // sada video - start halftime
         }
     },
     getters: {
@@ -347,8 +532,8 @@ export interface Game {
 
 export interface GamesStore {
     games: [Game, Game, Game];
-    currentHalfTime: 1 | 2 | 3 | 4 | 5;
-    selectedPlayer: 0 | 1 | 2;
+    currentHalfTime: Halftime; 
+    selectedPlayer: Player; 
     currentClock: CurrentClock;
     currentAction: OneAction;
     zen: boolean;
@@ -358,6 +543,9 @@ export interface GamesStore {
 export interface MainGamesStore {
     editors: [GamesStore, GamesStore];
     current_editor: number;
+    command: string;
+    video?: HTMLVideoElement;
+    startedAction: number;
 }
 
 export interface CurrentClock {
@@ -365,6 +553,12 @@ export interface CurrentClock {
     id: number;
     ms: number;
 }
+
+export type Halftime = 1 | 2 | 3 | 4 | 5;
+export type Player = 0 | 1 | 2;
+
+const paramCommands = ["i", "p", "d", "H"];
+const normalCommands = ["k", ">", "<", "l", "h", "z", "s", "x"];
 
 function emptyGame(): Game {
     let game: Game = {
@@ -401,6 +595,6 @@ function emptyState(): GamesStore {
 
 function emptyMainState(): MainGamesStore {
     const editors: [GamesStore, GamesStore] = [emptyState(), emptyState()];
-    return { editors, current_editor: 0 }
+    return { editors, current_editor: 0, command: "", startedAction: 0 }
 }
 

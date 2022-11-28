@@ -1,7 +1,7 @@
 <template>
     <ChangeClockModal v-if="store.isModalActive(0)" />
     <PlayerNameModal v-else-if="store.isModalActive(1)" />
-    <section class="grid grid-cols-3 grid-rows-4 main-editor gap-y-10 text-2xl lg:hidden"
+    <section class="grid grid-cols-3 grid-rows-4 main-editor gap-y-11 text-2xl lg:hidden"
         :class="{ 'opacity-8': store.anyModal() }">
         <EditorHeader />
         <StartStopButton />
@@ -27,7 +27,7 @@ import { useFootballStore } from '@/stores/footballStore';
 const store = useFootballStore();
 
 onMounted(() => {
-    store.checkLocalStorage();
+    store.checkLocalStorage('games');
 })
 
 </script>

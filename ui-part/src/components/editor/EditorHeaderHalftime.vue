@@ -1,5 +1,8 @@
 <template>
-   <div class="ml-3 grid grid-cols-3 grid-rows-2 gap-3 text-2xl font-zector">
+   <div class="ml-3 grid grid-cols-3 grid-rows-2 gap-3 text-2xl font-zector"
+      :class="{'abc': editor() == 0,
+               'col-span-1 row-span-1': editor() == 1}" 
+      >
       <button @click="store.changeHalftime(1)"
          class="col-start-1 row-start-1 px-2 bg-slate-700 rounded-full shadow shadow-slate-600 "
          :class="{'selected': store.isSelectedHalftime(1)}">1</button>
@@ -24,6 +27,9 @@ import { useFootballStore } from '@/stores/footballStore';
 
 const store = useFootballStore();
 
+function editor(): number {
+   return store.$state.current_editor; 
+}
 
 </script>
 
