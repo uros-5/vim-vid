@@ -28,7 +28,7 @@ import { useFootballStore } from '@/stores/footballStore';
 const store = useFootballStore();
 
 function editor(): number {
-   return store.$state.current_editor; 
+   return store.current_editor; 
 }
 
 </script>

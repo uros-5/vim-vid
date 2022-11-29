@@ -5,7 +5,7 @@
                 <input v-model="name" placeholder="Player name" class="p-2 bg-slate-700 rounded" maxlength="6 " size="6" type="text" />
             </div>
             <div>
-                <button @click="confirm()" class="bg-slate-500 shadow shadow-slate-500 p-2 rounded-lg row-start-2 col-start-2 font-lekton">
+                <button @click="store.changePlayerName(name)" class="bg-slate-500 shadow shadow-slate-500 p-2 rounded-lg row-start-2 col-start-2 font-lekton">
                     Confirm
                 </button>
             </div>
@@ -19,10 +19,4 @@ import { ref } from 'vue';
 
 const store = useFootballStore();
 const name = ref("");
-
-function confirm() {
-    store.updateName(name.value);
-    store.enableModal(1);
-}
-
 </script>

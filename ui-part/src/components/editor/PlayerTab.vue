@@ -23,7 +23,7 @@ const props = defineProps<{ id: number }>();
 const store = useFootballStore();
 
 function name(): string {
-    let name = store.$state.editors[store.editor()].games[props.id].match_info.title;
+    let name = store.editors[store.editor()].games[props.id].match_info.title;
     return name == "" ? `P${props.id}` : name
 }
 

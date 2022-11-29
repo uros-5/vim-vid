@@ -20,16 +20,16 @@ import EditorHeaderHalftime from '../editor/EditorHeaderHalftime.vue';
 const store = useFootballStore();
 
 function model(): { min: number, sec: number } {
-    const halftime = store.$state.editors[store.editor()].currentHalfTime;
-    return store.$state.editors[store.editor()].games[store.selectedPlayer()].match_info.start_halftime[halftime - 1]
+    const halftime = store.editors[store.editor()].currentHalfTime;
+    return store.editors[store.editor()].games[store.selectedPlayer()].match_info.start_halftime[halftime - 1]
 }
 
 function setHalftime() {
-    const halftime = store.$state.editors[store.editor()].currentHalfTime;
-    let time = store.$state.video!.currentTime * 1000;
+    const halftime = store.editors[store.editor()].currentHalfTime;
+    let time = store.video!.currentTime * 1000;
     let calc = timeAgo(time, true);
-    store.$state.editors[store.editor()].games[store.selectedPlayer()].match_info.start_halftime[halftime - 1].min = calc.minutes;
-    store.$state.editors[store.editor()].games[store.selectedPlayer()].match_info.start_halftime[halftime - 1].sec = calc.seconds;
+    store.editors[store.editor()].games[store.selectedPlayer()].match_info.start_halftime[halftime - 1].min = calc.minutes;
+    store.editors[store.editor()].games[store.selectedPlayer()].match_info.start_halftime[halftime - 1].sec = calc.seconds;
     store.saveLocalStorage();
 }
 

@@ -3,7 +3,7 @@
     <video controls v-if="file != null">
         <source :src="newUrl()">
     </video>
-    <p>komanda je {{ store.$state.command }}</p>
+    <p>komanda je {{ store.command }}</p>
 </template>
 
 <script setup lang="ts">
@@ -16,7 +16,7 @@ const store = useFootballStore();
 function change(payload: Event) {
     file.value = (payload.target as HTMLInputElement).files![0] as Blob;
     setTimeout(() => {
-        store.$state.video = document.querySelector('video') as HTMLVideoElement;
+        store.video = document.querySelector('video') as HTMLVideoElement;
         document.body.addEventListener('keydown', store.parseCommand);
     }, 300)
 }

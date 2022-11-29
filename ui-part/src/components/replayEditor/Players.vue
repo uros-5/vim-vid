@@ -17,7 +17,7 @@ import EditorHeaderDownload from '../editor/EditorHeaderDownload.vue';
 const store = useFootballStore();
 
 function name(id: number): string {
-    let name = store.$state.editors[store.editor()].games[id].match_info.title;
+    let name = store.editors[store.editor()].games[id].match_info.title;
     return name == "" ? `P${id}` : name
 }
 

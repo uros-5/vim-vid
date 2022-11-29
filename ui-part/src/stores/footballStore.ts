@@ -1,4 +1,4 @@
-import { ref, computed, reactive } from 'vue'
+import { reactive } from 'vue'
 import { defineStore } from 'pinia'
 import { timeAgo } from '@/plugins/timeAgo';
 import { play } from '@/plugins/sounds';
@@ -9,57 +9,145 @@ export const useFootballStore = defineStore('football', {
     },
     actions: {
         onLoad() {
-            if (this.$state.current_editor == 1) { return; }
-            if (this.$state.editors[this.editor()].currentClock.running == true) {
-                this.$state.editors[this.editor()].currentClock.running = false;
+            if (this.editor() == 1) { return; }
+            if (this.editors[this.editor()].currentClock.running == true) {
+                this.editors[this.editor()].currentClock.running = false;
                 this.startClock();
             }
         },
 
-        selectPlayer(id: number) {
-            this.$state.editors[this.editor()].selectedPlayer = (id) as Player;
+        // LOCAL STORAGE
+        checkLocalStorage(s: string) {
+            let item = localStorage.getItem(s)
+            if (item == null) {
+                this.saveLocalStorage();
+            }
+            else {
+                let loadedItem: GamesStore = JSON.parse(item);
+                loadedItem = reactive(loadedItem);
+                this.editors[this.editor()].currentAction = loadedItem.currentAction;
+                this.editors[this.editor()].currentClock = reactive(Object.assign({}, loadedItem.currentClock));
+                this.editors[this.editor()].currentHalfTime = loadedItem.currentHalfTime;
+                this.editors[this.editor()].games = loadedItem.games;
+                this.editors[this.editor()].modal = loadedItem.modal;
+                this.editors[this.editor()].selectedPlayer = loadedItem.selectedPlayer;
+                this.editors[this.editor()].zen = loadedItem.zen;
+                this.onLoad();
+            }
         },
 
-        selectedPlayer() {
-            return this.$state.editors[this.editor()].selectedPlayer;
+        saveLocalStorage() {
+            let item = this.editor() == 0 ? "games" : "gamesReplay"
+            let newItem = JSON.stringify(this.editors[this.editor()]);
+            localStorage.setItem(item, newItem);
         },
 
-        isActive(): boolean {
-            return this.$state.editors[this.editor()].currentAction.active;
+        // MODALS
+        isModalActive(id: number): boolean {
+            return this.editors[this.editor()].modal[id];
         },
 
-        startAction() {
-            this.$state.editors[this.editor()].currentAction.active = true;
-            let m = this.editor() == 0 ? 500 : 0;
-            let time = timeAgo(this.$state.editors[this.editor()].currentClock.ms - m, true);
-            this.$state.editors[this.editor()].currentAction.min = time.minutes;
-            this.$state.editors[this.editor()].currentAction.sec = time.seconds;
+        enableModal(id: number) {
+            let modal = this.isModalActive(id);
+            this.editors[this.editor()].modal[id] = !modal;
             this.saveLocalStorage();
-            let a = 0;
-            let self = this;
-            if (this.editor() == 1) { return }
-            let ins = setInterval(() => {
-                a += 200;
-                if (self.$state.editors[this.editor()].currentAction.active == false) {
-                    self.$state.editors[this.editor()].currentAction.to_add = (a / 1000) + 1;
-                    self.$state.editors[this.editor()].currentAction.active = false;
-                    self.saveAction()
-                    clearInterval(ins);
-                    play("stop");
-                }
-            }, 200);
         },
 
-        stopAction() {
-            this.$state.editors[this.editor()].currentAction.active = false;
-            //let time = this.timeAgo();
+        anyModal(): boolean {
+            return [this.isModalActive(0), this.isModalActive(1)].includes(true)
         },
 
+        // CURRENT CLOCK
+        isClockActive() {
+            return this.editors[this.editor()].currentClock.running;
+        },
+
+        currentClock(): number {
+            let customMs = this.customMs();
+            let preSec = customMs == 0 ? this.halftimeMs() : customMs;
+            let elapsed = Date.now() - + (new Date(this.editors[this.editor()].currentClock.dateStart));
+            return preSec + elapsed
+        },
+
+        customMs(): number {
+            let min = this.editors[this.editor()].currentClock.customStart.min;
+            let sec = this.editors[this.editor()].currentClock.customStart.sec;
+            return (min * 60 * 1000) + (sec * 1000)
+        },
+
+        halftimeMs(): number {
+            return this.startMinutes() * 60 * 1000
+        },
+
+        // CHANGE CLOCK
+        changeClock(min: number, sec: number) {
+            this.setClock(min, sec)
+            this.enableModal(0);
+        },
+
+        startClock() {
+            if (this.editors[this.editor()].currentClock.running == true) { return; }
+            this.editors[this.editor()].currentClock.dateStart = new Date();
+            this.editors[this.editor()].currentClock.running = true;
+            this.editors[this.editor()].currentAction.halftime = this.editors[this.editor()].currentHalfTime;
+            this.saveLocalStorage();
+        },
+
+        pauseClock() {
+            this.editors[this.editor()].currentClock.running = false;
+            this.saveLocalStorage();
+        },
+
+        setClock(min: number, sec: number) {
+            const ms = min * 60_000 + sec * 1000;
+            this.editors[this.editor()].currentClock.customStart.min = min;
+            this.editors[this.editor()].currentClock.customStart.sec = sec;
+            this.saveLocalStorage();
+        },
+
+        // PLAYER NAME
+        changePlayerName(name: string) {
+            this.updateName(name);
+            this.enableModal(1);
+        },
+
+        updateName(name: string) {
+            let player = this.editors[this.editor()].selectedPlayer;
+            this.editors[this.editor()].games[player].match_info.title = name;
+            this.saveLocalStorage();
+        },
+
+        // DOWNLOAD PLAYER
+        downloadPlayer(): string {
+            let dataStr = "data:text/json;charset=utf-8,";
+            let player = this.editors[this.editor()].selectedPlayer;
+            let other = encodeURIComponent(JSON.stringify(this.editors[this.editor()].games[player]))
+            dataStr += other;
+            return dataStr;
+        },
+
+        // TOGGLE CLOCK
+        toggleClock() {
+            if (this.editors[this.editor()].currentClock.running == true) {
+                this.pauseClock();
+            }
+            else if (this.editors[this.editor()].currentClock.running == false) {
+                this.startClock();
+            }
+        },
+
+        // CHANGE HALFTIME
+        changeHalftime(index: number) {
+            this.editors[this.editor()].currentHalfTime = index as Halftime;
+            this.saveLocalStorage();
+        },
+
+        // START STOP BUTTON
         toggleAction(id: number) {
-            if (this.$state.editors[this.editor()].currentClock.running == false) { return; }
-            this.$state.editors[this.editor()].selectedPlayer = id as Player; 
+            if (this.editors[this.editor()].currentClock.running == false) { return; }
+            this.editors[this.editor()].selectedPlayer = id as Player;
             let active = this.isActive();
-            this.$state.editors[this.editor()].currentAction.active = !active;
+            this.editors[this.editor()].currentAction.active = !active;
             active = this.isActive();
             if (active) {
                 this.startAction();
@@ -70,113 +158,171 @@ export const useFootballStore = defineStore('football', {
             }
         },
 
+        startAction() {
+            this.editors[this.editor()].currentAction.active = true;
+            let m = this.editor() == 0 ? 500 : 0;
+            let current = this.currentClock() - m;
+            let time = timeAgo(current, true);
+            this.editors[this.editor()].currentClock.actionMs = time.minutes * 60000 + time.seconds * 1000;
+            this.editors[this.editor()].currentAction.min = time.minutes;
+            this.editors[this.editor()].currentAction.sec = time.seconds;
+            this.editors[this.editor()].currentAction.halftime = this.currentHalfTime();
+            this.saveLocalStorage();
+            if (this.editor() == 1) { return }
+        },
+
+        stopAction() {
+            this.editors[this.editor()].currentAction.active = false;
+            let to_add = this.actionToAdd();
+            this.editors[this.editor()].currentAction.to_add = to_add;
+            this.saveAction();
+            play("stop");
+        },
+
         saveAction() {
-            let player = this.$state.editors[this.editor()].selectedPlayer;
-            this.$state.editors[this.editor()].currentAction.id = this.createId();
-            this.$state.editors[this.editor()].games[player]!.highlights.push(Object.assign({}, this.$state.editors[this.editor()].currentAction));
+            let player = this.editors[this.editor()].selectedPlayer;
+            this.editors[this.editor()].currentAction.id = this.createId();
+            this.editors[this.editor()].games[player]!.highlights.push(Object.assign({}, this.editors[this.editor()].currentAction));
             this.emptyAction();
             this.saveLocalStorage();
         },
 
-        newReplayAction() {
-            let active = this.$state.editors[this.editor()].currentAction.active;
-            if (active == false) {
-                play("start")
-                this.$state.editors[this.editor()].currentAction.halftime = this.$state.editors[this.editor()].currentHalfTime;
-                this.$state.editors[this.editor()].currentAction.active = true;
-                this.$state.startedAction = this.$state.video!.currentTime!;
-                this.$state.editors[this.editor()].currentClock.ms = this.calculateStartSeconds() * 1000;
-                this.startAction();
-                return false;
-            }
-            else {
-                let time = timeAgo((this.$state.video?.currentTime! - this.$state.startedAction) * 1000, true);
-                this.$state.editors[this.editor()].currentAction.to_add = (time.minutes * 60 + time.seconds);
-                this.$state.editors[this.editor()].currentAction.active = false;
-                this.saveAction()
-                play("stop");
-                this.$state.editors[this.editor()].currentAction.active = false;
-                return true;
-            }
+        actionStart() {
+            let action = this.editors[this.editor()].currentAction;
+            return action.min * 60000 + action.sec * 1000
         },
 
-        emptyAction() {
-            this.$state.editors[this.editor()].currentAction = { id: 0, halftime: 0, min: 0, sec: 0, to_add: 0, active: false };
+        actionEnd() {
+            let current = this.currentClock();
+            let time = timeAgo(current, true);
+            return time.minutes * 60000 + time.seconds * 1000;
         },
 
-        lastAction(): OneAction | undefined {
-            let player = this.$state.editors[this.editor()].selectedPlayer;
-            let highlights = this.$state.editors[this.editor()].games[player].highlights;
-            let len = highlights.length;
-            if (len == 0) { return undefined; }
-            return highlights[len - 1];
+        actionToAdd(): number {
+            let start = this.actionStart();
+            let end = this.actionEnd();
+            let to_add = timeAgo(end - start, true);
+            return to_add.minutes * 60 + to_add.seconds
         },
 
-        deleteLastAction() {
-            let player = this.$state.editors[this.editor()].selectedPlayer;
-            let lastAction = this.lastAction();
-            if (lastAction != undefined) {
-                this.$state.editors[this.editor()].games[player].highlights = this.$state.editors[this.editor()].games[player].highlights.filter(item => item.id != lastAction?.id);
-                this.saveLocalStorage();
-                play("delete");
-            }
+        // PLAYER TABS
+        selectPlayer(id: number) {
+            this.editors[this.editor()].selectedPlayer = (id) as Player;
         },
 
+        selectedPlayer() {
+            return this.editors[this.editor()].selectedPlayer;
+        },
+
+        // ADD ACTION TO OTHER PLAYERS
         addActionToOthers(index: number) {
             let lastAction = this.lastAction();
             if (lastAction == undefined) { return; }
-            let highlights = this.$state.editors[this.editor()].games[index].highlights;
+            let highlights = this.editors[this.editor()].games[index].highlights;
             let exist = highlights.find(item => item.id == lastAction?.id);
             if (exist == undefined) {
-                this.$state.editors[this.editor()].games[index].highlights.push(Object.assign({}, lastAction));
+                this.editors[this.editor()].games[index].highlights.push(Object.assign({}, lastAction));
                 this.saveLocalStorage();
                 play("other");
             }
         },
 
-        startWith() {
-            let last = Object.assign({}, this.lastAction());
-            let player = this.$state.editors[this.editor()].selectedPlayer;
-            this.deleteLastAction();
-            this.$state.editors[this.editor()].games[player].highlights = [last, ...this.$state.editors[this.editor()].games[player].highlights];
-            this.saveLocalStorage();
-        },
-
-
+        // ZEN MODE
         zenMode() {
             let zen = this.isZen();
-            this.$state.editors[this.editor()].zen = !zen;
+            this.editors[this.editor()].zen = !zen;
             this.saveLocalStorage();
         },
 
         isZen(): boolean {
-            return this.$state.editors[this.editor()].zen
+            return this.editors[this.editor()].zen
         },
 
-        downloadPlayer(): string {
-            let dataStr = "data:text/json;charset=utf-8,";
-            let player = this.$state.editors[this.editor()].selectedPlayer;
-            let other = encodeURIComponent(JSON.stringify(this.$state.editors[this.editor()].games[player]))
-            dataStr += other;
-            return dataStr;
-
+        // START WITH
+        startWith() {
+            let last = Object.assign({}, this.lastAction());
+            let player = this.editors[this.editor()].selectedPlayer;
+            this.deleteLastAction();
+            this.editors[this.editor()].games[player].highlights = [last, ...this.editors[this.editor()].games[player].highlights];
+            this.saveLocalStorage();
         },
 
-        deletePlayer(id: number) {
-            if (this.$state.editors[this.editor()].currentClock.running == false || this.$state.current_editor == 1) {
-                if (id > 2) { return; }
-                this.$state.editors[this.editor()].games[id] = emptyGame();
+        // START HALFTIME
+        startHalftime() {
+            let minute = 0;
+            if (this.editors[this.editor()].currentClock.running == false) {
+                switch (this.editors[this.editor()].currentHalfTime) {
+                    case 1:
+                        minute = 0;
+                        break;
+                    case 2: minute = 45; break;
+                    case 3: minute = 90; break;
+                    case 4: minute = 115; break;
+                    case 5: minute = 130; break;
+                }
                 this.saveLocalStorage();
             }
         },
 
-        changeHalftime(index: number) {
-            this.$state.editors[this.editor()].currentHalfTime = index as 1 | 2 | 3 | 4 | 5;
+        // DELETE PLAYER
+        deletePlayer(id: number) {
+            if (id > 2) { return; }
+            this.editors[this.editor()].games[id] = emptyGame();
             this.saveLocalStorage();
         },
 
+        // REPLAY ACTION
+        newReplayAction() {
+            let active = this.editors[this.editor()].currentAction.active;
+            if (active == false) {
+                play("start")
+                this.editors[this.editor()].currentAction.halftime = this.editors[this.editor()].currentHalfTime;
+                this.editors[this.editor()].currentAction.active = true;
+                this.startedAction = this.video!.currentTime!;
+                this.editors[this.editor()].replayClock.ms = this.calculateStartSeconds() * 1000;
+                this.startAction();
+                return false;
+            }
+            else {
+                let time = timeAgo((this.video?.currentTime! - this.startedAction) * 1000, true);
+                this.editors[this.editor()].currentAction.to_add = (time.minutes * 60 + time.seconds);
+                this.editors[this.editor()].currentAction.active = false;
+                this.saveAction()
+                play("stop");
+                this.editors[this.editor()].currentAction.active = false;
+                return true;
+            }
+        },
+
+        // PLAYER ACTIONS
+        emptyAction() {
+            this.editors[this.editor()].currentAction = { id: 0, halftime: 0, min: 0, sec: 0, to_add: 0, active: false };
+        },
+
+        lastAction(): OneAction | undefined {
+            let player = this.editors[this.editor()].selectedPlayer;
+            let highlights = this.editors[this.editor()].games[player].highlights;
+            let len = highlights.length;
+            if (len == 0) { return undefined; }
+            return highlights[len - 1];
+        },
+
+        isActive(): boolean {
+            return this.editors[this.editor()].currentAction.active;
+        },
+
+        deleteLastAction() {
+            let player = this.editors[this.editor()].selectedPlayer;
+            let lastAction = this.lastAction();
+            if (lastAction != undefined) {
+                this.editors[this.editor()].games[player].highlights = this.editors[this.editor()].games[player].highlights.filter(item => item.id != lastAction?.id);
+                this.saveLocalStorage();
+                play("delete");
+            }
+        },
+
         currentHalfTime(): number {
-            return this.$state.editors[this.editor()].currentHalfTime;
+            return this.editors[this.editor()].currentHalfTime;
         },
 
         isSelectedHalftime(index: number): boolean {
@@ -184,46 +330,16 @@ export const useFootballStore = defineStore('football', {
         },
 
         currentMin(): number {
-            return this.$state.editors[this.editor()].currentAction.min;
+            return this.editors[this.editor()].currentAction.min;
 
         },
 
         currentSec(): number {
-            return this.$state.editors[this.editor()].currentAction.sec;
+            return this.editors[this.editor()].currentAction.sec;
         },
 
         currentToAdd(): number {
-            return this.$state.editors[this.editor()].currentAction.to_add;
-        },
-
-        timeAgo(): { minutes: number, seconds: number } {
-            //let ms = this.$state.editors[this.editor()].currentClock.min * 60_000 + this.$state.editors[this.editor()].currentClock.sec * 1000;
-            return timeAgo(this.$state.editors[this.editor()].currentClock.ms);
-        },
-
-        checkLocalStorage(s: string) {
-            let item = localStorage.getItem(s)
-            if (item == null) {
-                this.saveLocalStorage();
-            }
-            else {
-                let loadedItem: GamesStore = JSON.parse(item);
-                loadedItem = reactive(loadedItem);
-                this.$state.editors[this.editor()].currentAction = loadedItem.currentAction;
-                this.$state.editors[this.editor()].currentClock = Object.assign({}, loadedItem.currentClock);
-                this.$state.editors[this.editor()].currentHalfTime = loadedItem.currentHalfTime;
-                this.$state.editors[this.editor()].games = loadedItem.games;
-                this.$state.editors[this.editor()].modal = loadedItem.modal;
-                this.$state.editors[this.editor()].selectedPlayer = loadedItem.selectedPlayer;
-                this.$state.editors[this.editor()].zen = loadedItem.zen;
-                this.onLoad();
-            }
-        },
-
-        saveLocalStorage() {
-            let item = this.$state.current_editor == 0 ? "games" : "gamesReplay"
-            let newItem = JSON.stringify(this.$state.editors[this.editor()]);
-            localStorage.setItem(item, newItem);
+            return this.editors[this.editor()].currentAction.to_add;
         },
 
         randomId(): number {
@@ -231,8 +347,8 @@ export const useFootballStore = defineStore('football', {
         },
 
         idExist(id: number): boolean {
-            let player = this.$state.editors[this.editor()].selectedPlayer;
-            let exist = this.$state.editors[this.editor()].games[player].highlights.find(item => item.id == id);
+            let player = this.editors[this.editor()].selectedPlayer;
+            let exist = this.editors[this.editor()].games[player].highlights.find(item => item.id == id);
             return exist == undefined ? false : true;
         },
 
@@ -245,117 +361,51 @@ export const useFootballStore = defineStore('football', {
             }
         },
 
-        anyModal(): boolean {
-            return [this.isModalActive(0), this.isModalActive(1)].includes(true)
-        },
 
-        updateName(name: string) {
-            let player = this.$state.editors[this.editor()].selectedPlayer;
-            this.$state.editors[this.editor()].games[player].match_info.title = name;
-        },
-
-        isModalActive(id: number): boolean {
-            return this.$state.editors[this.editor()].modal[id];
-        },
-
-        enableModal(id: number) {
-            let modal = this.isModalActive(id);
-            this.$state.editors[this.editor()].modal[id] = !modal;
-        },
-
-        startClock() {
-            if (this.$state.editors[this.editor()].currentClock.running == true) { return; }
-            this.$state.editors[this.editor()].currentClock.running = true;
-            let self = this;
-            this.$state.editors[this.editor()].currentClock.ms += 1000;
-            this.saveLocalStorage();
-            let clockInterval = setInterval(() => {
-                this.$state.editors[this.editor()].currentClock.ms += 1000;
-                this.$state.editors[this.editor()].currentClock.id = clockInterval;
-                this.$state.editors[this.editor()].currentAction.halftime = self.$state.editors[this.editor()].currentHalfTime;
-            }, 1000);
-        },
-
-        toggleClock() {
-            if (this.$state.editors[this.editor()].currentClock.running == true) {
-                this.pauseClock();
-            }
-            else if (this.$state.editors[this.editor()].currentClock.running == false) {
-                this.startClock();
-            }
-        },
-
-        startHalftime() {
-            let minute = 0;
-            if (this.$state.editors[this.editor()].currentClock.running == false) {
-                switch (this.$state.editors[this.editor()].currentHalfTime) {
-                    case 1:
-                        minute = 0;
-                        break;
-                    case 2: minute = 45; break;
-                    case 3: minute = 90; break;
-                    case 4: minute = 115; break;
-                    case 5: minute = 130; break;
-                }
-                this.$state.editors[this.editor()].currentClock.ms = minute * 60000;
-                this.saveLocalStorage();
-            }
-        },
-
-        pauseClock() {
-            this.$state.editors[this.editor()].currentClock.running = false;
-            clearInterval(this.$state.editors[this.editor()].currentClock.id);
-            this.saveLocalStorage();
-        },
-
-        setClock(min: number, sec: number) {
-            this.$state.editors[this.editor()].currentClock.ms = min * 60_000 + sec * 1000;
-            this.saveLocalStorage();
-        },
 
         fileName(): string {
-            let name = this.$state.editors[this.editor()].games[this.$state.editors[this.editor()].selectedPlayer].match_info.title;
-            return name == "" ? `Player${this.$state.editors[this.editor()].selectedPlayer}.json` : `${name}.json`;
+            let name = this.editors[this.editor()].games[this.editors[this.editor()].selectedPlayer].match_info.title;
+            return name == "" ? `Player${this.editors[this.editor()].selectedPlayer}.json` : `${name}.json`;
         },
 
         editor(): number {
-            return this.$state.current_editor;
+            return this.current_editor
         },
 
         parseCommand(event: KeyboardEvent) {
             const key = event.key;
-            let command = this.$state.command;
+            let command = this.command;
             if (command != "") {
                 if (command[0] == "T") {
                     if (key == "Enter") {
-                        this.$state.command = `${command}`;
+                        this.command = `${command}`;
                         this.updateName(command.split("T")[1]);
-                        this.$state.command = "";
+                        this.command = "";
                         this.saveLocalStorage();
                     }
                     else {
-                        this.$state.command = `${command}${key}`;
+                        this.command = `${command}${key}`;
                     }
                 }
                 else if (paramCommands.includes(command[0])) {
                     if (command[0] == "H") {
                         if (isNaN(Number(key))) {
-                            this.$state.command = "";
+                            this.command = "";
                         }
                         else if ([1, 2, 3, 4, 5].includes(Number(key))) {
-                            this.$state.command = `${command}${key}`;
-                            this.$state.editors[this.editor()].currentHalfTime = Number(key) as Halftime; 
-                            this.$state.editors[this.editor()].games[this.selectedPlayer()].match_info.current_halftime = Number(key);
+                            this.command = `${command}${key}`;
+                            this.editors[this.editor()].currentHalfTime = Number(key) as Halftime;
+                            this.editors[this.editor()].games[this.selectedPlayer()].match_info.current_halftime = Number(key);
                             this.saveLocalStorage();
-                            this.$state.command = "";
+                            this.command = "";
                         }
                     }
                     else {
                         if (isNaN(Number(key))) {
-                            this.$state.command = ""
+                            this.command = ""
                         }
                         else if ([1, 2, 3].includes(Number(key))) {
-                            this.$state.command = `${command}${key}`
+                            this.command = `${command}${key}`
                             this.executeCommand();
                             this.saveLocalStorage();
                         }
@@ -363,36 +413,36 @@ export const useFootballStore = defineStore('football', {
                 }
             }
             else {
-                this.$state.command = key;
+                this.command = key;
                 this.executeCommand()
             }
         },
 
         executeCommand() {
-            let command = this.$state.command;
+            let command = this.command;
             let commands: string[] = ["T", "r"].concat(paramCommands).concat(normalCommands);
-            if (this.$state.video == null) { return; }
+            if (this.video == null) { return; }
             else if (commands.includes(command[0]) == false) {
-                this.$state.command = "";
+                this.command = "";
                 return;
             }
             else {
                 switch (command[0]) {
                     case 'k': {
-                        this.$state.video?.paused ? this.$state.video.play() : this.$state.video?.pause();
+                        this.video?.paused ? this.video.play() : this.video?.pause();
                         break;
                     }
-                    case '>': this.$state.video.playbackRate += 0.3; break;
-                    case '<': this.$state.video.playbackRate -= 0.3; break;
+                    case '>': this.video.playbackRate += 0.3; break;
+                    case '<': this.video.playbackRate -= 0.3; break;
                     case 'i': {
                         if (command.length > 1) {
                             let id = Number(command[1]);
                             if (isNaN(id)) {
-                                this.$state.command = "";
+                                this.command = "";
                             }
                             else {
                                 this.addActionToOthers(id - 1);
-                                this.$state.command = "";
+                                this.command = "";
                                 this.saveLocalStorage();
                             }
                             break;
@@ -401,17 +451,17 @@ export const useFootballStore = defineStore('football', {
                             return;
                         }
                     };
-                    case 'l': this.$state.video.currentTime += 3; break;
-                    case 'h': this.$state.video.currentTime -= 3; break;
+                    case 'l': this.video.currentTime += 3; break;
+                    case 'h': this.video.currentTime -= 3; break;
                     case 'p': {
                         if (command.length > 1) {
                             let id = Number(command[1]);
                             if (isNaN(id)) {
-                                this.$state.command = "";
+                                this.command = "";
                             }
                             else {
                                 this.selectPlayer(id - 1);
-                                this.$state.command = "";
+                                this.command = "";
                                 this.saveLocalStorage();
                             }
                             break;
@@ -419,17 +469,21 @@ export const useFootballStore = defineStore('football', {
                         else {
                             return;
                         }
+                    };
+                    case "f": {
+                        this.startWith();
+                        break;
                     };
                     case 'z': return;
                     case 'd': {
                         if (command.length > 1) {
                             let id = Number(command[1]);
                             if (isNaN(id)) {
-                                this.$state.command = "";
+                                this.command = "";
                             }
                             else {
                                 this.deletePlayer(id - 1);
-                                this.$state.command = "";
+                                this.command = "";
                                 this.saveLocalStorage();
                             }
                             break;
@@ -449,41 +503,47 @@ export const useFootballStore = defineStore('football', {
                         }
                     }
                 }
-                this.$state.command = "";
+                this.command = "";
             }
         },
 
 
 
         startMinutes(): number {
-            if (this.$state.editors[this.editor()].currentHalfTime == 1) {
+            if (this.editors[this.editor()].currentHalfTime == 1) {
                 return 0;
             }
-            else if (this.$state.editors[this.editor()].currentHalfTime == 2) {
+            else if (this.editors[this.editor()].currentHalfTime == 2) {
                 return 45
-            } if (this.$state.editors[this.editor()].currentHalfTime == 3) {
+            } if (this.editors[this.editor()].currentHalfTime == 3) {
                 return 90
             }
-            else if (this.$state.editors[this.editor()].currentHalfTime == 4) {
+            else if (this.editors[this.editor()].currentHalfTime == 4) {
                 return 105
             }
-            else if (this.$state.editors[this.editor()].currentHalfTime == 5) {
+            else if (this.editors[this.editor()].currentHalfTime == 5) {
                 return 120
             }
             return 0
         },
 
         calculateStartSeconds(): number {
-            let editor = this.$state.editors[this.editor()];
+            let editor = this.editors[this.editor()];
             let halftime: number | { min: number, sec: number } = editor.games[this.selectedPlayer()].match_info.start_halftime[editor.currentHalfTime - 1];
             halftime = halftime.min * 60 + halftime.sec;
-            let action = timeAgo((this.$state.startedAction - halftime) * 1000, true);
+            let action = timeAgo((this.startedAction - halftime) * 1000, true);
             let calculated = (this.startMinutes() * 60) + action.minutes * 60 + action.seconds
             return calculated
-            // sada video - start halftime
         }
     },
     getters: {
+        abc(store): number {
+            return store.current_editor
+        },
+
+        currentAction(store): OneAction {
+            return store.editors[store.current_editor].currentAction;
+        }
 
     }
 })
@@ -532,12 +592,15 @@ export interface Game {
 
 export interface GamesStore {
     games: [Game, Game, Game];
-    currentHalfTime: Halftime; 
-    selectedPlayer: Player; 
-    currentClock: CurrentClock;
+    currentHalfTime: Halftime;
+    selectedPlayer: Player;
+    replayClock: ReplayClock;
+    currentClock: currentClock;
     currentAction: OneAction;
+    halftimeDate: Date;
     zen: boolean;
     modal: [boolean, boolean];
+
 }
 
 export interface MainGamesStore {
@@ -548,17 +611,26 @@ export interface MainGamesStore {
     startedAction: number;
 }
 
-export interface CurrentClock {
-    running: boolean;
-    id: number;
+export interface ReplayClock {
     ms: number;
+}
+
+export interface currentClock {
+    customStart: { min: number, sec: number };
+    dateStart: Date;
+    actionMs: number;
+    running: boolean;
 }
 
 export type Halftime = 1 | 2 | 3 | 4 | 5;
 export type Player = 0 | 1 | 2;
 
 const paramCommands = ["i", "p", "d", "H"];
-const normalCommands = ["k", ">", "<", "l", "h", "z", "s", "x"];
+const normalCommands = ["k", ">", "<", "l", "h", "z", "s", "x", "f"];
+
+function emptycurrentClock(): currentClock {
+    return { running: false, customStart: { min: 0, sec: 0 }, dateStart: new Date(), actionMs: 0 }
+}
 
 function emptyGame(): Game {
     let game: Game = {
@@ -585,12 +657,13 @@ function emptyState(): GamesStore {
         games: [emptyGame(), emptyGame(), emptyGame()],
         currentHalfTime: 1,
         selectedPlayer: 0,
-        currentClock: { ms: 0, running: false, id: 0 },
+        replayClock: { ms: 0 },
         currentAction: { id: 0, halftime: 0, min: 0, sec: 0, to_add: 0, active: false },
         zen: false,
-        modal: [false, false]
+        modal: [false, false],
+        halftimeDate: new Date(),
+        currentClock: emptycurrentClock()
     }
-
 }
 
 function emptyMainState(): MainGamesStore {

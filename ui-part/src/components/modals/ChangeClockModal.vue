@@ -9,7 +9,7 @@
                 <input v-model.number="sec" placeholder="seconds" class="p-2 bg-slate-700 rounded" type="text" size="3"
                     maxlength="3" />
             </div>
-            <button @click="confirm"
+            <button @click="store.changeClock(min, sec)"
                 class="bg-slate-500 shadow shadow-slate-500 rounded-lg row-start-2 col-start-2 font-lekton">
                 Confirm
             </button>
@@ -29,10 +29,4 @@ const store = useFootballStore();
 onMounted(() => {
     store.pauseClock();
 });
-
-function confirm() {
-    store.setClock(min.value, sec.value)
-    store.enableModal(0);
-}
-
 </script>

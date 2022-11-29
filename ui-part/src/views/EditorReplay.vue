@@ -18,7 +18,7 @@ import { onMounted } from 'vue';
 
 
 const store = useFootballStore();
-store.$state.current_editor = 1;
+store.current_editor = 1;
 onMounted(() => {
     store.checkLocalStorage('gamesReplay');
 })
