@@ -94,7 +94,6 @@ export const useFootballStore = defineStore("football", {
         // CHANGE CLOCK
         changeClock(min: number, sec: number, toEnable?: boolean) {
             this.setClock(min, sec);
-            console.log(toEnable);
             if (toEnable)
                 this.enableModal(0);
         },
@@ -179,9 +178,9 @@ export const useFootballStore = defineStore("football", {
         startAction() {
             this.editors[this.editor()].currentAction.active = true;
             const m = this.editor() == 0 ? 800 : 0;
+            console.log(m);
             const current = this.currentClock() - m;
             const time = timeAgo(current, true);
-            console.log(time);
             this.editors[this.editor()].currentClock.actionMs =
                 time.minutes * 60000 + time.seconds * 1000;
             this.editors[this.editor()].currentAction.min = time.minutes;
@@ -329,7 +328,6 @@ export const useFootballStore = defineStore("football", {
             } else {
                 play("stop");
                 const time = timeAgo((this.video?.currentTime! - this.startedAction) * 1000, true);
-                console.log(time);
                 this.editors[this.editor()].currentAction.to_add = time.minutes * 60 + time.seconds;
                 this.editors[this.editor()].currentAction.active = false;
                 this.saveAction();
@@ -347,7 +345,6 @@ export const useFootballStore = defineStore("football", {
             halftime = halftime.min * 60 + halftime.sec;
             const action = timeAgo((this.startedAction - halftime) * 1000, true);
             const calculated = this.startMinutes() * 60 + action.minutes * 60 + action.seconds;
-            console.log(editor, halftime, action, calculated);
             return calculated;
         },
 
