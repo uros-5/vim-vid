@@ -172,13 +172,13 @@ export const useFootballStore = defineStore("football", {
                 play("start");
             } else {
                 this.stopAction();
+                play("stop");
             }
         },
 
         startAction() {
             this.editors[this.editor()].currentAction.active = true;
             const m = this.editor() == 0 ? 800 : 0;
-            console.log(m);
             const current = this.currentClock() - m;
             const time = timeAgo(current, true);
             this.editors[this.editor()].currentClock.actionMs =
