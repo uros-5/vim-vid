@@ -178,7 +178,7 @@ export const useFootballStore = defineStore("football", {
 
         startAction() {
             this.editors[this.editor()].currentAction.active = true;
-            const m = this.editor() == 0 ? 800 : 0;
+            const m = this.editor() == 0 ? 1300 : 0;
             const current = this.currentClock() - m;
             const time = timeAgo(current, true);
             this.editors[this.editor()].currentClock.actionMs =
