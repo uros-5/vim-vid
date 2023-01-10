@@ -1,8 +1,13 @@
 <template>
-  <div class="my-5 col-span-1 row-start-1 flex flex-col gap-3">
-    <EditorHeaderHalftime />
+  <div class="my-5 col-span-3 row-start-3 lg:col-span-1 lg:row-start-1 flex flex-col items-center gap-3">
+    <p class="text-4xl">
+     {{ store.editors[store.editor()].currentHalfTime}}
+      <span class="text-2xl">{{ halftime() }}</span>
+    </p>
     <div class="my-5 flex gap-4">
+    
       <input
+      disabled
         v-model="model().min"
         class="bg-slate-700 rounded text-2xl"
         type="number"
@@ -10,19 +15,18 @@
         maxlength="3"
       />
       <input
+      disabled
         v-model="model().sec"
         class="bg-slate-700 rounded text-2xl"
         type="number"
         size="3"
         maxlength="3"
-      />
-      <button @click="setHalftime()" class="bg-slate-800 p-3 rounded-sm">SET</button>
+      /> 
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { timeAgo } from "@/plugins/timeAgo";
 import { useFootballStore } from "@/stores/footballStore";
 import EditorHeaderHalftime from "../editor/EditorHeaderHalftime.vue";
 
@@ -34,20 +38,12 @@ function model(): { min: number; sec: number } {
     .start_halftime[halftime - 1];
 }
 
-function setHalftime() {
+function halftime(): string {
   const halftime = store.editors[store.editor()].currentHalfTime;
-  let time = store.video!.currentTime * 1000;
-  let calc = timeAgo(time, true);
-  [0, 1, 2].forEach((element) => {
-    store.editors[store.editor()].games[element].match_info.start_halftime[
-      halftime - 1
-    ].min = calc.minutes;
-    store.editors[store.editor()].games[element].match_info.start_halftime[
-      halftime - 1
-    ].sec = calc.seconds;
-  });
-  store.saveLocalStorage();
+  const halftimes = ['st', 'nd', 'rd', 'th', 'th'];
+  return halftimes[halftime - 1];
 }
+
 </script>
 
 <style scoped>
@@ -60,6 +56,6 @@ input::-webkit-inner-spin-button {
 
 /* Firefox */
 input[type="number"] {
-  -moz-appearance: textfield;
+  --moz-appearance: textfield;
 }
 </style>

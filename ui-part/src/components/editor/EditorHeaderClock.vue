@@ -20,10 +20,9 @@ const sec = ref("00");
 const clock = ref({ min: 0, sec: 0 });
 const store = useFootballStore();
 const localInterval = ref(0);
-
 onMounted(() => {
   if (store.editors[store.editor()].currentClock.running) {
-    localInterval.value = setInterval(() => updateClock(), 1000);
+    localInterval.value = window.setInterval(() => updateClock(), 1000);
   }
   watch(store.editors[store.editor()], async (old, newer) => {
     if (differentClock(newer.currentClock.customStart)) {
@@ -31,7 +30,7 @@ onMounted(() => {
     }
     if (newer.currentClock.running) {
       if (localInterval.value == 0) {
-        localInterval.value = setInterval(() => updateClock(), 1000);
+        localInterval.value = window.setInterval(() => updateClock(), 1000);
       }
     } else {
       clearInterval(localInterval.value);

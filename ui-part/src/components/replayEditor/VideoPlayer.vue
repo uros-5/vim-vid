@@ -1,9 +1,10 @@
 <template>
+  <div class="col-span-3 row-start-1  lg:col-start-2 lg:col-span-3 lg:row-start-1 lg:row-span-3">
   <input type="file" v-if="file == null" v-on:change="change" />
   <video controls v-if="file != null">
     <source :src="newUrl()" />
   </video>
-  <p>komanda je {{ store.command }}</p>
+  </div>
 </template>
 
 <script setup lang="ts">

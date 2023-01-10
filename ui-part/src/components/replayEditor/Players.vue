@@ -1,5 +1,5 @@
 <template>
-  <div class="col-start-3 row-start-1 flex flex-col gap-5 text-2xl">
+  <div class="col-span-3 row-start-2 row-span-1 lg:col-span-1 lg:row-start-2 flex flex-col gap-5 text-2xl">
     <div
       v-for="i in [1, 2, 3]"
       :key="i"
