@@ -6,7 +6,7 @@
       'bg-slate-300 text-slate-900': store.isActive(),
     }"
   >
-    <div class="text-center my-9">
+    <div class="text-center my-9 sm:text-2xl md:text-3xl">
       {{ name() }}
     </div>
     <div class="flex justify-around gap-3">

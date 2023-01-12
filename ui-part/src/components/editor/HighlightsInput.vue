@@ -1,5 +1,5 @@
 <template>
-  <div class="row-start-5 col-span-3 flex flex-col items-center justify-center">
+  <div class="row-start-5 col-span-3 flex flex-col items-center justify-center lg:hidden">
     <div class="flex flex-row gap-3">
       <input
         disabled

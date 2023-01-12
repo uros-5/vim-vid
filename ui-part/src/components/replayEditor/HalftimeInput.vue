@@ -1,5 +1,5 @@
 <template>
-  <div class="my-5 col-span-3 row-start-3 lg:col-span-1 lg:row-start-1 flex flex-col items-center gap-3">
+  <div class="my-5 col-span-3 row-start-3 lg:col-span-1 lg:row-start-2 flex flex-col items-center gap-3">
     <p class="text-4xl font-lekton">
       {{ store.editors[store.editor()].currentHalfTime }}
       <span class="text-2xl">{{ halftime() }}</span>

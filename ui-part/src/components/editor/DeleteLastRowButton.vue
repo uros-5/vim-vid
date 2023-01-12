@@ -1,5 +1,5 @@
 <template>
-  <button @click="store.deleteLastAction()" class="text-xl text-center py-3 text-red-300">
+  <button @click="store.deleteLastAction()" class="text-xl text-center py-3 lg:px-9 text-red-300">
     Delete
   </button>
 </template>

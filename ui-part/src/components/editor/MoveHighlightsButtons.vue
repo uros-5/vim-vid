@@ -1,12 +1,8 @@
 <template>
-  <div class="row-start-3 col-span-3 font-zector font-bold">
-    <div class="flex flex-row p-2 ml-5 justify-around gap-2">
-      <button
-        @click="store.addActionToOthers(i - 1)"
-        v-for="i in [1, 2, 3]"
-        :key="i"
-        class="px-3 py-5 bg-slate-600 hover:bg-slate-500 shadow shadow-slate-600 transition active:bg-red-400 hover:transition-colors rounded-sm"
-      >
+  <div class="row-start-3 col-span-3 lg:row-start-2 lg:col-start-3 lg:col-span-1 font-zector font-bold">
+    <div class="flex flex-row lg:flex-col p-2 ml-5 justify-around lg:items-stretch gap-2 lg:gap-5">
+      <button @click="store.addActionToOthers(i - 1)" v-for="i in [1, 2, 3]" :key="i"
+        class="px-3 py-5 sm:text-2xl md:text-3xl bg-slate-600 hover:bg-slate-500 shadow shadow-slate-600 transition active:bg-red-400 hover:transition-colors rounded-sm">
         <span class="px-1">{{ i }}</span>
       </button>
     </div>

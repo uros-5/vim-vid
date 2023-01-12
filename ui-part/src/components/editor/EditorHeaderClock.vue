@@ -1,7 +1,7 @@
 <template>
   <div
     @click="store.toggleClock()"
-    class="flex flex-row text-5xl font-zector font-extrabold cursor-pointer active:text-slate-600"
+    class="flex flex-row text-5xl lg:text-8xl font-zector font-extrabold cursor-pointer active:text-slate-600"
     :class="{ 'text-red-400': store.isClockActive() == false }"
   >
     <div>{{ min }}</div>

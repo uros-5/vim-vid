@@ -2,9 +2,8 @@
   <ChangeClockModal v-if="store.isModalActive(0)" />
   <PlayerNameModal v-else-if="store.isModalActive(1)" />
   <section
-    class="grid grid-cols-3 grid-rows-4 main-editor gap-y-11 text-2xl lg:hidden"
-    :class="{ 'opacity-8': store.anyModal() }"
-  >
+    class="grid grid-cols-3 grid-rows-4 lg:grid-rows-3 lg:grid-cols-4 lg:justify-center main-editor gap-y-11 text-2xl lg:gap-2"
+    :class="{ 'opacity-8': store.anyModal() }">
     <EditorHeader />
     <StartStopButton />
     <PlayerTabs v-if="store.isZen() == false" />
@@ -36,6 +35,12 @@ onMounted(() => {
 <style scoped>
 .main-editor {
   grid-template-rows: 0.1fr 0.6fr 0.2fr 0.2fr;
+}
+
+@media(min-width:1024px) {
+  .main-editor {
+    grid-template-rows: 0.4fr 1fr 0.4fr;
+  }
 }
 
 .main-editor-zen {

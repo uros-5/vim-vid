@@ -1,6 +1,6 @@
 <template>
   <div
-    class="row-start-2 col-span-2 text-center font-zector font-extrabold hidden"
+    class="row-start-2 col-span-2 lg:row-start-2 text-center font-zector font-extrabold hidden"
     :class="{ 'col-span-4 row-end-5 w-full on-block': store.isZen() }"
   >
     <button
