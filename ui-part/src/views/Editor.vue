@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import EditorHeader from '@/components/editor/EditorHeader.vue';
+import EditorHeader from "@/components/editor/EditorHeader.vue";
 import StartStopButton from "@/components/editor/StartStopButton.vue";
 import MoveHighlightsButtons from "@/components/editor/MoveHighlightsButtons.vue";
 import HighlightsInput from "@/components/editor/HighlightsInput.vue";

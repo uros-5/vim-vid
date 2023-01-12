@@ -1,15 +1,12 @@
 <template>
   <div class="col-span-3 row-start-2 row-span-1 lg:col-span-1 lg:row-start-2 flex flex-col gap-5 text-2xl">
-    <div
-      v-for="i in [1, 2, 3]"
-      :key="i"
-      class="bg-slate-500 border-2 border-solid border-black overflow-hidden"
+    <div v-for="i in [1, 2, 3]" :key="i"
+      class="bg-slate-500 font-lekton transition-colors duration-200 border-2 border-solid border-black rounded-lg shadow-md shadow-gray-700 hover:gray-300 overflow-hidden"
       :class="{
-        'border-green-50': store.selectedPlayer() == i - 1,
-        'bg-slate-300 text-slate-900': store.isActive(),
-      }"
-    >
-      <div class="rounded">{{ i }}. {{ name(i - 1) }}</div>
+  'border-gray-300 font-bold font-lekton-bold text-gray-300': store.selectedPlayer() == i - 1,
+  'bg-slate-300 text-slate-900': store.isActive(),
+}">
+      <div class="rounded mx-5 text-2xl lg:text-3xl">{{ i }}. {{ name(i - 1) }}</div>
     </div>
     <EditorHeaderDownload />
   </div>

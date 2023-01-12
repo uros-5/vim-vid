@@ -3,19 +3,28 @@
 @tailwind utilities;
 
 @font-face {
-    font-family: Lekton;
-    src: url(assets/fonts/lekton005_l.otf);
+  font-family: Lekton;
+  src: url(assets/fonts/lekton005_l.otf);
 }
 
 @font-face {
-    font-family: Zector;
-    src: url(assets/fonts/Zector.ttf);
+  font-family: LektonBold;
+  src: url(assets/fonts/Lekton-Bold.ttf);
+}
+
+@font-face {
+  font-family: Zector;
+  src: url(assets/fonts/Zector.ttf);
 }
 
 .font-zector {
-    font-family: Zector;
+  font-family: Zector;
 }
 
 .font-lekton {
-    font-family: Lekton;
+  font-family: Lekton;
+}
+
+.font-lekton-bold {
+  font-family: LektonBold;
 }

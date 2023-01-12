@@ -2,6 +2,7 @@ import { reactive } from "vue";
 import { defineStore } from "pinia";
 import { timeAgo } from "@/plugins/timeAgo";
 import { play } from "@/plugins/sounds";
+import router from "@/router";
 
 export const useFootballStore = defineStore("football", {
   state: (): MainGamesStore => {
@@ -188,8 +189,7 @@ export const useFootballStore = defineStore("football", {
     // CHANGE CLOCK
     changeClock(min: number, sec: number, toEnable?: boolean) {
       this.setClock(min, sec);
-      if (toEnable)
-        this.enableModal(0);
+      if (toEnable) this.enableModal(0);
     },
 
     startClock() {
@@ -251,7 +251,7 @@ export const useFootballStore = defineStore("football", {
       this.editors[this.editor()].currentHalfTime = index as Halftime;
       this.saveLocalStorage();
     },
-   
+
     // ZEN MODE
     zenMode() {
       const zen = this.isZen();
@@ -296,7 +296,7 @@ export const useFootballStore = defineStore("football", {
             minute = 130;
             break;
         }
-        let clock = timeAgo(minute * 60000, false);
+        const clock = timeAgo(minute * 60000, false);
         this.changeClock(clock.minutes, clock.seconds);
         this.saveLocalStorage();
       }
@@ -566,6 +566,9 @@ export const useFootballStore = defineStore("football", {
             break;
           case "H":
             return;
+          case "b":
+            router.push("/");
+            break;
           case "T": {
             if (command.length > 1) {
             } else {
@@ -593,11 +596,10 @@ export const useFootballStore = defineStore("football", {
       return 0;
     },
 
-
     setHalftime() {
       const halftime = this.editors[this.editor()].currentHalfTime;
-      let time = this.video!.currentTime * 1000;
-      let calc = timeAgo(time, true);
+      const time = this.video!.currentTime * 1000;
+      const calc = timeAgo(time, true);
       [0, 1, 2].forEach((element) => {
         this.editors[this.editor()].games[element].match_info.start_halftime[
           halftime - 1
@@ -607,7 +609,7 @@ export const useFootballStore = defineStore("football", {
         ].sec = calc.seconds;
       });
       this.saveLocalStorage();
-    }
+    },
   },
   getters: {
     currentAction(store): OneAction {
@@ -695,7 +697,7 @@ export type Halftime = 1 | 2 | 3 | 4 | 5;
 export type Player = 0 | 1 | 2;
 
 const paramCommands = ["i", "p", "d", "H"];
-const normalCommands = ["k", ">", "<", "l", "h", "z", "y", "s", "x", "f"];
+const normalCommands = ["k", ">", "<", "l", "h", "z", "y", "s", "x", "f", "b"];
 
 function emptycurrentClock(): currentClock {
   return {

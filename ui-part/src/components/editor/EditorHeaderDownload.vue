@@ -1,6 +1,6 @@
 <template>
   <a @mouseover="url = store.downloadPlayer()" :href="url" :download="store.fileName()">
-    <InlineSvg :src="dlIcon" width="50px" />
+    <InlineSvg :src="dlIcon" class="w-[50px] lg:w-[80px]" />
   </a>
 </template>
 
@@ -19,9 +19,11 @@ const url = ref("");
 img {
   color: white;
 }
+
 a {
   color: inherit;
 }
+
 a:hover {
   color: inherit !important;
   background-color: inherit;
