@@ -17,6 +17,11 @@
   src: url(assets/fonts/Zector.ttf);
 }
 
+@font-face {
+  font-family: Courier-Bold;
+  src: url(assets/fonts/Courier-BoldRegular.ttf);
+}
+
 .font-zector {
   font-family: Zector;
 }
@@ -27,4 +32,8 @@
 
 .font-lekton-bold {
   font-family: LektonBold;
+}
+
+.font-courier {
+  font-family: Courier-Bold;
 }
