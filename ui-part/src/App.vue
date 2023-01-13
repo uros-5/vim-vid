@@ -3,7 +3,12 @@ import { RouterView } from "vue-router";
 </script>
 
 <template>
-  <RouterView />
+  <RouterView v-slot="{ Component }">
+    <Transition name="vim" mode="out-in">
+      <component :is="Component"></component>
+    </Transition>
+  </RouterView>
+
 </template>
 
 <style scoped>
@@ -67,5 +72,23 @@ nav a:first-of-type {
     padding: 1rem 0;
     margin-top: 1rem;
   }
+}
+
+.vim-enter-from {
+  opacity: 0;
+  transform: translateX(100px);
+}
+
+.vim-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.vim-leave-to {
+  opacity: 0;
+  transform: translateX(-100px);
+}
+
+.vim-leave-active {
+  transition: all 0.3s ease-in;
 }
 </style>
