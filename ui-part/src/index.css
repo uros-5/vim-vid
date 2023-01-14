@@ -22,6 +22,11 @@
   src: url(assets/fonts/Courier-BoldRegular.ttf);
 }
 
+@font-face {
+  font-family: PlayfairDisplay;
+  src: url(assets/fonts/PlayfairDisplay.ttf);
+}
+
 .font-zector {
   font-family: Zector;
 }
@@ -36,4 +41,8 @@
 
 .font-courier {
   font-family: Courier-Bold;
+}
+
+.font-playfair {
+  font-family: PlayfairDisplay;
 }

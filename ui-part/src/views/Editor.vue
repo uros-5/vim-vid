@@ -1,7 +1,7 @@
 <template>
-  <!-- <ChangeClockModal v-if="store.isModalActive(0)" />
+<span>
+  <ChangeClockModal v-if="store.isModalActive(0)" />
   <PlayerNameModal v-else-if="store.isModalActive(1)" />
-  -->
   <section
     class="grid grid-cols-3 grid-rows-4 lg:grid-rows-3 lg:grid-cols-4 lg:justify-center main-editor gap-y-11 text-2xl lg:gap-2"
     :class="{ 'opacity-8': store.anyModal() }">
@@ -12,6 +12,7 @@
     <GameOptions />
     <HighlightsInput v-if="store.isZen() == false" />
   </section>
+</span>
 </template>
 
 <script setup lang="ts">
