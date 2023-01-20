@@ -1,9 +1,8 @@
-<template>
-  <section class="my-5 grid grid-cols-3 grid-rows-3 lg:grid-cols-3 lg:grid-rows-2 gap-5 lg:gap-3">
-    <VideoPlayer />
-    <Players />
-    <HalftimeInput />
-  </section>
+<template lang="pug">
+section(class="my-5 grid grid-cols-3 grid-rows-3 lg:grid-cols-3 lg:grid-rows-2 gap-5 lg:gap-3")
+  VideoPlayer
+  Players
+  HalftimeInput 
 </template>
 
 <script setup lang="ts">

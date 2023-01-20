@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "pinia": "^2.0.23",
+    "pug": "^3.0.2",
+    "pug-plain-loader": "^1.1.0",
     "typescript-vue-plugin": "^1.0.19",
     "vue": "^3.2.41",
     "vue-inline-svg": "^3.1.0",
@@ -21,6 +23,7 @@
     "@rushstack/eslint-patch": "^1.1.4",
     "@types/node": "^16.11.68",
     "@vitejs/plugin-vue": "^3.1.2",
+    "@volar/vue-language-plugin-pug": "latest",
     "@vue/eslint-config-prettier": "^7.0.0",
     "@vue/eslint-config-typescript": "^11.0.0",
     "@vue/tsconfig": "^0.1.3",

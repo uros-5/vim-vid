@@ -3,9 +3,9 @@
     <div v-for="i in [1, 2, 3]" :key="i"
       class="bg-slate-500 font-playfair transition-colors duration-200 border-2 border-solid border-black rounded-lg shadow-md shadow-gray-700 hover:gray-300 overflow-hidden"
       :class="{
-  'border-gray-300 font-bold font-lekton-bold  text-slate-900': store.selectedPlayer() == i - 1 && store.isActive(),
-  'bg-slate-300': store.isActive(),
-}">
+        'border-gray-300 font-bold font-lekton-bold  text-slate-900': store.selectedPlayer() == i - 1 && store.isActive(),
+        'bg-slate-300': store.isActive(),
+      }">
       <div class="rounded mx-5 text-2xl lg:text-3xl">{{ i }}. {{ name(i - 1) }}</div>
     </div>
     <EditorHeaderDownload />
