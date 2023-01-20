@@ -9,14 +9,12 @@ span
     PlayerTabs(v-if="store.isZen() == false")
     MoveHighlightsButtons(v-if="store.isZen() == false")
     GameOptions
-    HighlightsInput(v-if="store.isZen() == false")
 </template>
 
 <script setup lang="ts">
 import EditorHeader from "@/components/editor/EditorHeader.vue";
 import StartStopButton from "@/components/editor/StartStopButton.vue";
 import MoveHighlightsButtons from "@/components/editor/MoveHighlightsButtons.vue";
-import HighlightsInput from "@/components/editor/HighlightsInput.vue";
 import GameOptions from "@/components/editor/GameOptions.vue";
 import PlayerTabs from "@/components/editor/PlayerTabs.vue";
 import ChangeClockModal from "@/components/modals/ChangeClockModal.vue";

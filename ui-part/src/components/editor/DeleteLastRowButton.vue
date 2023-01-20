@@ -1,7 +1,6 @@
-<template>
-  <button @click="store.deleteLastAction()" class="text-xl text-center py-3 lg:px-9 text-red-300">
-    Delete
-  </button>
+<template lang="pug">
+button(@click="store.deleteLastAction()"
+class="text-xl text-center py-3 lg:px-9 text-red-300") Delete
 </template>
 
 <script setup lang="ts">

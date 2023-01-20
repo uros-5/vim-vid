@@ -1,7 +1,6 @@
-<template>
-  <a @mouseover="url = store.downloadPlayer()" :href="url" :download="store.fileName()">
-    <InlineSvg :src="dlIcon" class="w-[50px] lg:w-[80px]" />
-  </a>
+<template lang="pug">
+a(@mouseover="url = store.downloadPlayer()" :href="url" :download="store.fileName()")
+  InlineSvg(:src="dlIcon" class="w-[50px] lg:w-[80px]")
 </template>
 
 <script setup lang="ts">
