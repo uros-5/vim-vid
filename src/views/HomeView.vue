@@ -10,7 +10,7 @@ import home_svg from "@/assets/home_svg.json";
   <main class="flex flex-col items-center">
     <HomeQuoute />
     <div class="flex flex-col gap-10 justify-between lg:flex-row">
-      <HomeTile v-for="i in home_svg.home_svg" :text="i.text" :path="i.path" :to-animate="i.toAnimate" />
+      <HomeTile v-for="item in home_svg.home_svg" :text="item.text" :path="item.path" :to-animate="item.toAnimate" :route="item.route" />
     </div>
     <HomeFooter />
   </main>
