@@ -1,78 +1,125 @@
 import { defineStore } from "pinia";
 import keys from 'ctrl-keys'
+import type { Clips, EditorAction, EditorBuffer, Markers } from "./vimvid-types";
+import { ref } from "vue";
 
-const vimvid = defineStore('vimvid', () => {
+export const vimvid = defineStore('vimvid', () => {
+  const video = ref(null as HTMLVideoElement | null);
+  const otherVideo = ref(null as HTMLVideoElement | null);
+  const fileElem = ref(null as HTMLInputElement | null);
+  const videoBlob = ref(null as null | Blob);
+  const isRecording = ref(false)
+  const currentSpeed = ref(1)
+  const lastTime = ref(0);
+  const clips = ref([] as Clips);
+  const currentId = ref(0);
+  const currentBuffer = ref(3 as EditorBuffer);
+  const lastCommand = ref([0, ""] as [EditorAction, string]);
+  const version = "0.0.0";
+  const isSaved = ref(false);
+  const start = ref(0);
+  const markers = ref([] as Markers);
+  const step = ref(3);
+
   const handler = keys()
   handler
     .add('h', () => {
-      console.log('h')
+      if(video.value) 
+        video.value.currentTime! -= step.value;
     })
     .add('l', () => {
-      console.log('l')
+      if(video.value) 
+        video.value.currentTime! += step.value;
     })
     .add('k', () => {
-      console.log('k')
+      if(video.value) {
+        video.value.paused ? video.value.play() : video.value.pause();
+      }
     })
     .add('j', () => {
-      console.log('j')
+      
     })
     .add('i', () => {
-      console.log('i')
+      
     })
     .add('shift+j', () => {
-      console.log('shift+j')
+      
     })
     .add('shift+k', () => {
-      console.log('shift+k')
+      
     })
     .add('shift+x', () => {
-      console.log('shift+x')
+      
     })
     .add('shift+<', () => {
-      console.log('shift+<')
+      
     })
     .add('shift+>', () => {
-      console.log('shift+>')
+      
     })
     .add('shift+h', () => {
-      console.log('shift+h')
+      
     })
     .add('shift+l', () => {
-      console.log('shift+l')
+      
     })
     .add('shift+?', () => {
-      console.log('?')
+      
     })
     .add('shift+m', () => {
-      console.log('shift+m')
+      
     })
     .add('ctrl+c', () => {
-      console.log('ctrl+c')
+      
     })
     .add('ctrl+m', () => {
-      console.log('ctrl+m')
+      
     })
     .add('0', () => {
-      console.log('0')
+      
     })
     .add('shift+c', () => {
-      console.log('shift+c')
+      
+    })
+    .add('ctrl+o', (e) => {
+      e?.preventDefault()
+      fileElem.value?.click()
     })
 
   window.addEventListener('keydown', handler.handle)
+
   return {
-    //
+    video: video,
+    videoBlob,
+    isRecording,
+    currentSpeed,
+    lastTime,
+    clips,
+    currentId,
+    currentBuffer,
+    lastCommand,
+    version,
+    isSaved,
+    start,
+    markers,
+    fileElem,
+    saveOriginalVideo (vid: Blob) {
+      videoBlob.value = vid;
+    },
+    setInput(video: HTMLInputElement) {
+      fileElem.value = video;
+    },
+    newUrl(): string {
+      return URL.createObjectURL(videoBlob.value!)
+    },
+    setVideo(element: HTMLVideoElement) {
+      video.value = element;
+      video.value.currentTime = lastTime.value;
+    },
+    setTime(time: number) {
+      lastTime.value = time;      
+    }
   }
+
 })
 
-export enum Acton {
-  GoLeft, GoRight, GoUp, GoDown,
-  StartRecording, StopRecording,
-  Play, Pause,
-  DeleteLastClip,
-  SpeedUp, SlowDown,
-  OpenHelp, GoToHome, MoveClip,
-  CopyCutCommand, CopyMergeCommand,
-  MoveToBeginning,
-  Clear
-} 
