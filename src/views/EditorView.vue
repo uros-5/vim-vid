@@ -1,5 +1,4 @@
 <template>
-
   <main class="grid grid-cols-[0.2fr_1fr_0.2fr] grid-rows-[8] gap-3 lg:grid-cols-[repeat(4,_0.5fr),0.7fr] lg:grid-rows-4">
     <VideoPlayer />
     <CurrentCommand />
@@ -7,7 +6,6 @@
     <SmallVideoPlayer />
     <StatusBar />
   </main>
-
 </template>
 
 <script setup lang="ts">
@@ -22,10 +20,6 @@ import StatusBar from '@/components/editor/StatusBar.vue';
 </script>
 
 <style scoped>
-
-.editor-view {
-  
-}
 
 
 </style>

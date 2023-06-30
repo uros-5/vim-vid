@@ -8,21 +8,18 @@
     <svg :class="{'transition animate-bounce svg-duration hover:animate-stop': props.toAnimate, 'svg-duration': !props.toAnimate}" class="" xmlns="http://www.w3.org/2000/svg" :width="currentSize" :height="currentSize" viewBox="0 0 24 24"><path :d="props.path"/></svg>
   </router-link>
 </div>
-<div class="hidden">
-  <input ref="fileElem" class="fill-slate-950 dark:fill-slate-200" type="file" accept="video/mp4" />
-  <span class="fill-black dark:fill-white"></span>
-</div>
 </section>
 
 </template>
 
 <script setup lang="ts">
+import { vimvid } from '@/stores/vimvid';
 import { onMounted, onUnmounted, ref } from 'vue';
 
-const currentSize = ref(120);
-const fileElem = ref(null as HTMLInputElement | null);
 const props = defineProps<{text: string, path: string, toAnimate: boolean, route: string}>();
+const currentSize = ref(120);
 let toUpdate = true;
+const store = vimvid() 
 
 function resize() {
   let width = document.documentElement.clientWidth;
@@ -40,7 +37,7 @@ function resize() {
 
 function uploadFile() {
   if(props.toAnimate) {
-    fileElem.value?.click()
+    store.fileElem?.click()
   }
 }
 

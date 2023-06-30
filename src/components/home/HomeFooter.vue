@@ -8,7 +8,6 @@ import InlineSvg from "vue-inline-svg"
 
 function toggle() {
   let a = document.querySelector("#app")?.classList.toggle('dark')
-  console.log(a)
 }
 
 </script>

@@ -3,7 +3,6 @@ import HomeTile from '@/components/home/HomeTile.vue';
 import HomeQuoute from '@/components/home/HomeQuoute.vue';
 import HomeFooter from '@/components/home/HomeFooter.vue';
 import home_svg from "@/assets/home_svg.json";
-
 </script>
 
 <template>
