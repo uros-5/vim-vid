@@ -1,6 +1,8 @@
 <template>
-  <div class="col-start-2 row-start-7 row-span-2 lg:col-start-5 lg:row-start-3 lg:row-span-3">
-    <video :style="styleVideo()" ref="videoElement" :src="''" controls source />
+  <div
+    class="col-start-2 row-start-6 row-span-2 lg:col-start-5 lg:row-start-1 lg:row-span-2 lg:flex lg:items-center lg:justify-center"
+  >
+    <video class="m-2" :style="styleVideo()" ref="videoElement" :src="''" controls source></video>
   </div>
 </template>
 
