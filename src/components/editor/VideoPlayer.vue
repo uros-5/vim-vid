@@ -1,6 +1,13 @@
 <template>
-  <div class="col-start-2 col-end-2 lg:col-start-1 lg:col-span-4 row-span-3">
-    <video :style="styleVideo()" ref="videoElement" :src="store.newUrl()" controls source />
+  <div class="col-start-1 col-span-3 row-start-1 row-span-3 lg:col-start-1 lg:col-span-4">
+    <video
+      class="m-auto w-full p-3 lg:m-2 lg:p-0"
+      :style="styleVideo()"
+      ref="videoElement"
+      :src="store.newUrl()"
+      controls
+      source
+    />
   </div>
 </template>
 

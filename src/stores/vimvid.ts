@@ -57,6 +57,10 @@ export const vimvid = defineStore('vimvid', () => {
     })
     .add('shift+l', () => {})
     .add('shift+?', () => {})
+    .add('shift+d', () => {
+      // store somewhere
+      document.querySelector('#app')?.classList.toggle('dark')
+    })
     .add('shift+m', () => {})
     .add('ctrl+c', () => {})
     .add('ctrl+m', () => {})
