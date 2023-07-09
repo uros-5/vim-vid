@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import keys from 'ctrl-keys'
-import type { Clips, EditorAction, EditorBuffer, Markers } from './vimvid-types'
+import { type Clips, type Clip, type EditorAction, type EditorBuffer, type Markers, emptyClip } from './vimvid-types'
 import { ref } from 'vue'
 import router from '@/router'
 
@@ -18,9 +18,9 @@ export const vimvid = defineStore('vimvid', () => {
   const lastCommand = ref([0, ''] as [EditorAction, string])
   const version = '0.0.0'
   const isSaved = ref(false)
-  const start = ref(0)
   const markers = ref([] as Markers)
   const step = ref(3)
+  const recordingClip = ref(emptyClip());
 
   const handler = keys()
   handler
@@ -35,7 +35,47 @@ export const vimvid = defineStore('vimvid', () => {
         video.value.paused ? video.value.play() : video.value.pause()
       }
     })
-    .add('i', () => {})
+    .add('i', () => { })
+    .add('o', () => {
+      if (video.value) {
+        switch (isRecording.value) {
+          case false:
+            {
+              console.log('recording');
+              isRecording.value = true;
+              recordingClip.value.start = video.value.currentTime;
+              break;
+            }
+          case true:
+            {
+              isRecording.value = false;
+              recordingClip.value.end = video.value.currentTime;
+              if (recordingClip.value.end <= recordingClip.value.start) {
+                recordingClip.value.start = 0;
+                recordingClip.value.end = 0;
+                return;
+              }
+              let id = 0;
+              while (true) {
+                id = randomId();
+                if (clips.value.find(item => item.id == id) == null) {
+                  break;
+                }
+              }
+              recordingClip.value.id = id;
+              clips.value.push(recordingClip.value);
+              recordingClip.value = emptyClip();
+              console.log('recording done');
+              let elem = document.querySelector('#statusbar');
+              if (elem) {
+                elem.scrollLeft = elem.scrollWidth;
+              }
+              
+              break;
+            }
+        }
+      }
+    })
     .add('shift+<', () => {
       if (video.value) {
         currentSpeed.value -= 0.3
@@ -48,24 +88,24 @@ export const vimvid = defineStore('vimvid', () => {
         video.value.playbackRate = currentSpeed.value
       }
     })
-    .add('x', () => {})
+    .add('x', () => { })
     .add('shift+h', () => {
       router.push('/')
     })
     .add('shift+e', () => {
       router.push('/editor')
     })
-    .add('shift+l', () => {})
-    .add('shift+?', () => {})
+    .add('shift+l', () => { })
+    .add('shift+?', () => { })
     .add('shift+d', () => {
       // store somewhere
       document.querySelector('#app')?.classList.toggle('dark')
     })
-    .add('shift+m', () => {})
-    .add('ctrl+c', () => {})
-    .add('ctrl+m', () => {})
-    .add('0', () => {})
-    .add('shift+c', () => {})
+    .add('shift+m', () => { })
+    .add('ctrl+c', () => { })
+    .add('ctrl+m', () => { })
+    .add('0', () => { })
+    .add('shift+c', () => { })
     .add('ctrl+o', (e) => {
       e?.preventDefault()
       fileElem.value?.click()
@@ -85,9 +125,9 @@ export const vimvid = defineStore('vimvid', () => {
     lastCommand,
     version,
     isSaved,
-    start,
     markers,
     fileElem,
+    recordingClip,
     saveOriginalVideo(vid: Blob) {
       videoBlob.value = vid
     },
@@ -110,3 +150,7 @@ export const vimvid = defineStore('vimvid', () => {
     }
   }
 })
+
+function randomId() {
+  return Math.floor(Math.random() * 1000);
+}

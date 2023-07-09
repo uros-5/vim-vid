@@ -47,3 +47,7 @@ export enum EditorAction {
   MoveToBeginning,
   Clear
 }
+
+export function emptyClip(): Clip {
+  return { start: 0, end: 0, id: 0, toAdd: 0 }
+}

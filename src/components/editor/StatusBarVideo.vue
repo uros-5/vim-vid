@@ -3,7 +3,7 @@
     class="flex flex-col align-center p-3 border-0 border-r border-slate-400 dark:border-slate-800 mr-2"
   >
     <p class="text-center lg:text-2xl dark:text-slate-300 font-bold">
-      <span class="font-thin">#</span>{{ props.videoId }}
+      <span class="font-thin">#</span>{{ props.clip.id }}
     </p>
 
     <svg xmlns="http://www.w3.org/2000/svg" width="70" height="70" viewBox="0 0 36 36">
@@ -31,9 +31,11 @@
 </template>
 
 <script setup lang="ts">
+import type { Clip } from '@/stores/vimvid-types'
+
 //
 
-const props = defineProps<{ videoId: string }>()
+const props = defineProps<{ clip: Clip }>()
 </script>
 
 <style scoped>
