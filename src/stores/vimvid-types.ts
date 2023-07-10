@@ -26,6 +26,8 @@ export type Marker = z.infer<typeof Marker>
 export const Markers = z.array(Marker)
 export type Markers = z.infer<typeof Markers>
 
+export type StorageSave = "darkMode" | "clips" | "markers" | "lastTime";
+
 export enum EditorAction {
   Nothing,
   GoLeft,

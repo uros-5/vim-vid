@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 import keys from 'ctrl-keys'
-import { type Clips, type Clip, type EditorAction, type EditorBuffer, type Markers, emptyClip } from './vimvid-types'
+import { Clips, Clip, type EditorAction, type EditorBuffer, Markers, emptyClip, type StorageSave } from './vimvid-types'
 import { ref } from 'vue'
 import router from '@/router'
+import { z } from 'zod'
 
 export const vimvid = defineStore('vimvid', () => {
   const video = ref(null as HTMLVideoElement | null)
@@ -21,6 +22,13 @@ export const vimvid = defineStore('vimvid', () => {
   const markers = ref([] as Markers)
   const step = ref(3)
   const recordingClip = ref(emptyClip());
+  const ls = readLocalStorage();
+  const darkMode = ref(false);
+  lastTime.value = ls.lastTime;
+  clips.value = ls.clips;
+  markers.value = ls.markers;
+  darkMode.value = ls.darkMode;
+  console.log(ls)
 
   const handler = keys()
   handler
@@ -41,7 +49,6 @@ export const vimvid = defineStore('vimvid', () => {
         switch (isRecording.value) {
           case false:
             {
-              console.log('recording');
               isRecording.value = true;
               recordingClip.value.start = video.value.currentTime;
               break;
@@ -65,12 +72,11 @@ export const vimvid = defineStore('vimvid', () => {
               recordingClip.value.id = id;
               clips.value.push(recordingClip.value);
               recordingClip.value = emptyClip();
-              console.log('recording done');
               let elem = document.querySelector('#statusbar');
               if (elem) {
                 elem.scrollLeft = elem.scrollWidth;
               }
-              
+              saveLocalStorage('clips', clips.value);
               break;
             }
         }
@@ -98,8 +104,8 @@ export const vimvid = defineStore('vimvid', () => {
     .add('shift+l', () => { })
     .add('shift+?', () => { })
     .add('shift+d', () => {
-      // store somewhere
-      document.querySelector('#app')?.classList.toggle('dark')
+      const data = document.querySelector('#app')?.classList.toggle('dark')
+      saveLocalStorage('darkMode', data);
     })
     .add('shift+m', () => { })
     .add('ctrl+c', () => { })
@@ -128,6 +134,7 @@ export const vimvid = defineStore('vimvid', () => {
     markers,
     fileElem,
     recordingClip,
+    darkMode,
     saveOriginalVideo(vid: Blob) {
       videoBlob.value = vid
     },
@@ -147,10 +154,29 @@ export const vimvid = defineStore('vimvid', () => {
     },
     setTime(time: number) {
       lastTime.value = time
-    }
+      saveLocalStorage('lastTime', time)
+    },
   }
 })
 
 function randomId() {
   return Math.floor(Math.random() * 1000);
+}
+
+function readLocalStorage() {
+  let darkMode = z.boolean().safeParse(JSON.parse(localStorage.getItem('darkMode')!));
+  let clips = Clips.safeParse(JSON.parse(localStorage.getItem('clips')!));
+  let markers = Markers.safeParse(JSON.parse(localStorage.getItem('markers')!));
+  let lastTime = z.number().safeParse(JSON.parse(localStorage.getItem('lastTime')!));
+  let obj = { darkMode: false, clips: [] as Clips, markers: [] as Markers, lastTime: 0 };
+  console.log(darkMode)
+  if (darkMode.success) obj.darkMode = darkMode.data;
+  if (clips.success) obj.clips = clips.data
+  if (markers.success) obj.markers = markers.data;
+  if (lastTime.success) obj.lastTime = lastTime.data
+  return obj;
+}
+
+function saveLocalStorage(key: StorageSave, value: any) {
+  localStorage.setItem(key, JSON.stringify(value))
 }

@@ -2,6 +2,16 @@
 import { RouterView } from 'vue-router'
 import MainHeader from './components/icons/MainHeader.vue'
 import HiddenInput from './components/HiddenInput.vue'
+import { vimvid } from './stores/vimvid'
+import { onMounted } from 'vue'
+
+const store = vimvid()
+onMounted(() => {
+  setTimeout(() => {
+    console.log(store.darkMode)
+    if (store.darkMode) document.querySelector('#app')?.classList.toggle('dark')
+  })
+})
 </script>
 
 <template>
