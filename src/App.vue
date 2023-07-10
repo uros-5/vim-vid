@@ -8,7 +8,6 @@ import { onMounted } from 'vue'
 const store = vimvid()
 onMounted(() => {
   setTimeout(() => {
-    console.log(store.darkMode)
     if (store.darkMode) document.querySelector('#app')?.classList.toggle('dark')
   })
 })
@@ -16,7 +15,7 @@ onMounted(() => {
 
 <template>
   <div
-    class="bg-gradient-to-b from-slate-300 from-20% dark:from-10% dark:from-slate-800 to-slate-500 dark:to-slate-600 w-full bg-no-repeat"
+    class="bg-gradient-to-b from-slate-300 from-20% dark:from-10% dark:from-slate-800 to-slate-500 dark:to-slate-600 w-full h-screen bg-no-repeat"
   >
     <MainHeader />
     <RouterView v-slot="{ Component }">
