@@ -1,6 +1,6 @@
 import { defineStore, type _ActionsTree } from 'pinia'
 import keys from 'ctrl-keys'
-import { Clips, EditorAction, EditorBuffer, Markers, type StorageSave } from './vimvid-types'
+import { Clips, EditorAction, EditorContext, Markers, type StorageSave } from './vimvid-types'
 import { ref, watch } from 'vue'
 import router from '@/router'
 import { z } from 'zod'
@@ -9,7 +9,7 @@ import { useMarkers } from './markers'
 
 export const vimvid = defineStore('vimvid', () => {
   const currentId = ref(0)
-  const currentBuffer = ref(EditorBuffer.Home as EditorBuffer)
+  const currentContext = ref(EditorContext.Home as EditorContext)
   const lastCommand = ref(EditorAction.Nothing);
   const version = '0.0.0'
   const isSaved = ref(false)
@@ -24,7 +24,7 @@ export const vimvid = defineStore('vimvid', () => {
   darkMode.value = ls.darkMode;
 
   let last = 0;
-  watch(lastCommand, (v) => {
+  watch(lastCommand, () => {
     last += 1;
     const old = last;
     setTimeout(() => {
@@ -38,8 +38,8 @@ export const vimvid = defineStore('vimvid', () => {
   const handler = keys()
   handler
     .add('h', () => {
-      switch (currentBuffer.value) {
-        case EditorBuffer.Main: {
+      switch (currentContext.value) {
+        case EditorContext.Main: {
           clipsStore.h();
           break;
         }
@@ -47,8 +47,8 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('l', () => {
-      switch (currentBuffer.value) {
-        case EditorBuffer.Main: {
+      switch (currentContext.value) {
+        case EditorContext.Main: {
           clipsStore.l();
           break;
         }
@@ -56,8 +56,8 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('k', () => {
-      switch (currentBuffer.value) {
-        case EditorBuffer.Main: {
+      switch (currentContext.value) {
+        case EditorContext.Main: {
           clipsStore.k();
           break;
         }
@@ -65,8 +65,8 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add(',', () => {
-      switch (currentBuffer.value) {
-        case EditorBuffer.Main: {
+      switch (currentContext.value) {
+        case EditorContext.Main: {
           clipsStore.volumeDown();
           break;
         }
@@ -74,8 +74,8 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('.', () => {
-      switch (currentBuffer.value) {
-        case EditorBuffer.Main: {
+      switch (currentContext.value) {
+        case EditorContext.Main: {
           clipsStore.volumeUp();
           break;
         }
@@ -83,8 +83,8 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('m', () => {
-      switch (currentBuffer.value) {
-        case EditorBuffer.Markers: {
+      switch (currentContext.value) {
+        case EditorContext.Markers: {
           markersStore.m();
           break;
         }
@@ -92,8 +92,8 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('o', () => {
-      switch (currentBuffer.value) {
-        case EditorBuffer.Main: {
+      switch (currentContext.value) {
+        case EditorContext.Main: {
           clipsStore.o();
           break;
         }
@@ -112,11 +112,11 @@ export const vimvid = defineStore('vimvid', () => {
     .add('shift+x', () => { clipsStore.x(false); })
     .add('shift+h', () => {
       router.push('/')
-      currentBuffer.value = EditorBuffer.Home;
+      currentContext.value = EditorContext.Home;
     })
     .add('shift+e', () => {
       router.push('/editor');
-      currentBuffer.value = EditorBuffer.Main;
+      currentContext.value = EditorContext.Main;
     })
     .add('shift+l', () => { })
     .add('shift+?', () => { })
@@ -133,37 +133,37 @@ export const vimvid = defineStore('vimvid', () => {
     .add('ctrl+o', (e) => { if (e) clipsStore.open(e); })
     .add('space', () => {
     return ;
-      switch (currentBuffer.value) {
-        case EditorBuffer.Home: {
-          currentBuffer.value = EditorBuffer.Main;
-          router.push('/editor');
-          break;
-        }
-        case EditorBuffer.Main: {
-          currentBuffer.value = EditorBuffer.Secondary;
-          break;
-        }
-        case EditorBuffer.Secondary: {
-          currentBuffer.value = EditorBuffer.Clips;
-          break;
-        }
-        case EditorBuffer.Clips: {
-          currentBuffer.value = EditorBuffer.Markers;
-          break;
-        }
-        case EditorBuffer.Markers: {
-          currentBuffer.value = EditorBuffer.Home;
-          router.push('/home');
-          break;
-        }
-      }
+      // switch (currentContext.value) {
+      //   case EditorContext.Home: {
+      //     currentContext.value = EditorContext.Main;
+      //     router.push('/editor');
+      //     break;
+      //   }
+      //   case EditorContext.Main: {
+      //     currentContext.value = EditorContext.Secondary;
+      //     break;
+      //   }
+      //   case EditorContext.Secondary: {
+      //     currentContext.value = EditorContext.Clips;
+      //     break;
+      //   }
+      //   case EditorContext.Clips: {
+      //     currentContext.value = EditorContext.Markers;
+      //     break;
+      //   }
+      //   case EditorContext.Markers: {
+      //     currentContext.value = EditorContext.Home;
+      //     router.push('/home');
+      //     break;
+      //   }
+      // }
     })
 
   window.addEventListener('keydown', handler.handle)
 
   return {
     currentId,
-    currentBuffer,
+    currentBuffer: currentContext,
     lastCommand,
     version,
     isSaved,
