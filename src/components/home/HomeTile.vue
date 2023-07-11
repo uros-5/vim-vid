@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <router-link :to="props.route">
     <p
       class="text-3xl text-center mb-10 selection:bg-green-100 dark:selection:bg-green-700 text-slate-950 dark:text-slate-200"
     >
@@ -9,7 +9,7 @@
       @click="uploadFile"
       class="transition-[background] border-2 border-b-2 bg-slate-400/[0.2] hover:bg-slate-400/[0.6] dark:bg-slate-800/[0.3] dark:hover:bg-slate-800/[0.6] rounded fill-slate-900 dark:fill-slate-400 shadow-md lg:rounded-lg shadow-black dark:shadow-slate-500 border-slate-400 dark:border-slate-700 flex p-8 m-auto lg:p-20 hover:cursor-pointer"
     >
-      <router-link :to="props.route" class="m-auto">
+      <section class="m-auto">
         <svg
           :class="{
             'transition animate-bounce svg-duration hover:animate-stop': props.toAnimate,
@@ -23,9 +23,9 @@
         >
           <path :d="props.path" />
         </svg>
-      </router-link>
+      </section>
     </div>
-  </section>
+  </router-link>
 </template>
 
 <script setup lang="ts">

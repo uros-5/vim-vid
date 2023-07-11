@@ -9,20 +9,28 @@ import { useClips } from './stores/clips'
 const store = vimvid()
 const clipsStore = useClips()
 const route = useRoute()
+const screenRoutes = ['editor', 'help']
 
 onMounted(() => {
   setTimeout(() => {
     if (store.darkMode) document.querySelector('#app')?.classList.toggle('dark')
   })
 })
+
+function isRoute(): boolean {
+  if (route.name) {
+    return screenRoutes.includes(route.name.toString())
+  }
+  return false
+}
 </script>
 
 <template>
   <div
-    class="bg-gradient-to-b from-slate-300 from-20% dark:from-10% dark:from-slate-800 to-slate-500 dark:to-slate-600 w-full bg-no-repeat"
+    class="bg-gradient-to-b from-slate-300 from-20% dark:from-10% dark:from-slate-800 to-slate-500 dark:to-slate-600 w-full bg-no-repeat transition-[height]"
     :class="{
       'h-full': route.name == 'home',
-      'h-screen': clipsStore.videoBlob == null && route.name == 'editor'
+      'h-screen': clipsStore.videoBlob == null && isRoute()
     }"
   >
     <transition name="header"> <MainHeader /> </transition>

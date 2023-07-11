@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { useClips } from '@/stores/clips'
 import { vimvid } from '@/stores/vimvid'
-import { EditorBuffer } from '@/stores/vimvid-types'
+import { EditorContext } from '@/stores/vimvid-types'
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -38,7 +38,7 @@ function newFile(payload: Event) {
     } else {
       router.push('/editor')
       clipsStore.saveOriginalVideo(tempBlob)
-      mainStore.currentBuffer = EditorBuffer.Main
+      mainStore.currentBuffer = EditorContext.Main
     }
   }
 }
