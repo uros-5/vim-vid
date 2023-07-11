@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export enum EditorBuffer {
+export enum EditorContext {
   Home,
   Main,
   Secondary,
@@ -54,13 +54,13 @@ export function emptyClip(): Clip {
   return { start: 0, end: 0, id: 0, toAdd: 0 }
 }
 
-export function bufferStr(buffer: EditorBuffer): string {
+export function bufferStr(buffer: EditorContext): string {
   switch (buffer) {
-    case EditorBuffer.Home: return "Home";
-    case EditorBuffer.Main: return "Main";
-    case EditorBuffer.Secondary: return "Secondary Video Player";
-    case EditorBuffer.Clips: return "Clips";
-    case EditorBuffer.Markers: return "Markers";
+    case EditorContext.Home: return "Home";
+    case EditorContext.Main: return "Main";
+    case EditorContext.Secondary: return "Secondary Video Player";
+    case EditorContext.Clips: return "Clips";
+    case EditorContext.Markers: return "Markers";
   }
 }
 
