@@ -1,7 +1,7 @@
 import { defineStore, type _ActionsTree } from 'pinia'
 import keys from 'ctrl-keys'
 import { Clips, EditorAction, EditorBuffer, Markers, type StorageSave } from './vimvid-types'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import router from '@/router'
 import { z } from 'zod'
 import { useClips } from './clips'
@@ -10,7 +10,7 @@ import { useMarkers } from './markers'
 export const vimvid = defineStore('vimvid', () => {
   const currentId = ref(0)
   const currentBuffer = ref(EditorBuffer.Home as EditorBuffer)
-  const lastCommand = ref([0, ''] as [EditorAction, string])
+  const lastCommand = ref(EditorAction.Nothing);
   const version = '0.0.0'
   const isSaved = ref(false)
   const ls = readLocalStorage();
@@ -22,6 +22,18 @@ export const vimvid = defineStore('vimvid', () => {
   clipsStore.clips = ls.clips;
   markersStore.markers = ls.markers;
   darkMode.value = ls.darkMode;
+
+  let last = 0;
+  watch(lastCommand, (v) => {
+    last += 1;
+    const old = last;
+    setTimeout(() => {
+      if (old == last) {
+        lastCommand.value = EditorAction.Nothing;
+        console.log('delete now')
+      }
+    }, 3000)
+  })
 
   const handler = keys()
   handler
@@ -97,7 +109,7 @@ export const vimvid = defineStore('vimvid', () => {
     .add('x', () => {
       clipsStore.x();
     })
-    .add('shift+x', () => {clipsStore.x(false);})
+    .add('shift+x', () => { clipsStore.x(false); })
     .add('shift+h', () => {
       router.push('/')
       currentBuffer.value = EditorBuffer.Home;
@@ -120,6 +132,7 @@ export const vimvid = defineStore('vimvid', () => {
     .add('ctrl+l', (e) => { e?.preventDefault(); })
     .add('ctrl+o', (e) => { if (e) clipsStore.open(e); })
     .add('space', () => {
+    return ;
       switch (currentBuffer.value) {
         case EditorBuffer.Home: {
           currentBuffer.value = EditorBuffer.Main;
