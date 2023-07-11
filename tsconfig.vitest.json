@@ -8,6 +8,11 @@
       "node",
       "jsdom"
     ],
+    "plugins": [
+      {
+        "name": "typescript-vue-plugin"
+      }
+    ],
     "lib": [
       "es2022",
       "dom"

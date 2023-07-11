@@ -20,6 +20,11 @@
     "lib": [
       "es2022",
       "dom"
-    ]
+    ],
+    "plugins": [
+      {
+        "name": "typescript-vue-plugin"
+      }
+    ],
   }
 }
