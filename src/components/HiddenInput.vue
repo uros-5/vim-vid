@@ -33,9 +33,7 @@ function newFile(payload: Event) {
   let tempBlob = (payload.target as HTMLInputElement).files?.item(0)
   if (tempBlob) {
     let cr = router.currentRoute.value.fullPath
-    if (cr.includes('/editor')) {
-      router.push('/editor')
-    } else if (cr.includes('/help')) {
+    if (cr.includes('/help')) {
       router.push('/editor')
     } else {
       router.push('/editor')

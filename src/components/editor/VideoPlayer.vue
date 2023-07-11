@@ -1,6 +1,7 @@
 <template>
   <div class="col-start-1 col-span-3 row-start-1 row-span-3 lg:col-start-1 lg:col-span-4">
     <video
+      v-if="store.newUrl() != ''"
       class="m-auto w-full p-3 lg:m-2 lg:p-0"
       :style="styleVideo()"
       ref="videoElement"
@@ -8,6 +9,12 @@
       controls
       source
     />
+    <div
+      class="bg-neutral-300 dark:bg-slate-700 dark:text-white my-4 bg-opacity-50 m-auto w-full p-3 lg:m-2 lg:p-0 h-full text-center flex justify-center items-center lg:text-3xl font-bold"
+      v-else-if="store.newUrl() == ''"
+    >
+      <p class="cursor-pointer" @click="store.fileElem?.click()">Please insert video</p>
+    </div>
   </div>
 </template>
 
@@ -54,4 +61,8 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+p {
+  font-family: 'Nunito Sans', sans-serif;
+}
+</style>
