@@ -109,15 +109,15 @@ export const useClips = defineStore("clips", () => {
     },
     async y() {
       if (clips.value.length > 0) {
-        let command = `#!/usr/bin/sh \nmkdir vimvid\nmkdir vimvid/clips vimvid/merged\n\nvidsrc=""\n`;
+        let command = `#!/usr/bin/sh \nmkdir vimvid\nmkdir vimvid/clips vimvid/merged\n\nvidsrc=""\next=""\n`;
         let mergeCommand = "ffmpeg ";
         let mergeAudio = "";
         let mergeVideo = "";
         let filterArray = "";
         command += "\n#all clips\n";
         clips.value.forEach((item, i) => {
-          command += `ffmpeg -ss ${item.start} -i "$vidsrc" -c:v copy -c:a copy -t ${item.end - item.start} "vimvid/clips/video-${item.id}.mp4"\n`;
-          mergeCommand += `-i "vimvid/clips/video-${item.id}.mp4" `;
+          command += `ffmpeg -ss ${item.start} -i "$vidsrc" -c:v copy -c:a copy -t ${item.end - item.start} "vimvid/clips/video-${item.id}.$ext"\n`;
+          mergeCommand += `-i "vimvid/clips/video-${item.id}.$ext" `;
           filterArray += `[${i}:a] `
         })
         command += "\n#merging\n";
