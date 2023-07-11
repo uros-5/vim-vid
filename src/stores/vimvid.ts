@@ -1,6 +1,6 @@
 import { defineStore, type _ActionsTree } from 'pinia'
 import keys from 'ctrl-keys'
-import { Clips,  EditorAction, type EditorBuffer, Markers,  type StorageSave } from './vimvid-types'
+import { Clips, EditorAction, EditorBuffer, Markers, type StorageSave } from './vimvid-types'
 import { ref } from 'vue'
 import router from '@/router'
 import { z } from 'zod'
@@ -9,7 +9,7 @@ import { useMarkers } from './markers'
 
 export const vimvid = defineStore('vimvid', () => {
   const currentId = ref(0)
-  const currentBuffer = ref(3 as EditorBuffer)
+  const currentBuffer = ref(EditorBuffer.Home as EditorBuffer)
   const lastCommand = ref([0, ''] as [EditorAction, string])
   const version = '0.0.0'
   const isSaved = ref(false)
@@ -25,21 +25,86 @@ export const vimvid = defineStore('vimvid', () => {
 
   const handler = keys()
   handler
-    .add('h', () => {})
-    .add('l', () => {})
-    .add('k', () => {})
-    .add(',', () => {})
-    .add('.', () => {})
-    .add('m', () => {})
-    .add('o', () => {})
-    .add('shift+<', () => {})
-    .add('shift+>', () => {})
-    .add('x', () => {})
+    .add('h', () => {
+      switch (currentBuffer.value) {
+        case EditorBuffer.Main: {
+          clipsStore.h();
+          break;
+        }
+        default: return;
+      }
+    })
+    .add('l', () => {
+      switch (currentBuffer.value) {
+        case EditorBuffer.Main: {
+          clipsStore.l();
+          break;
+        }
+        default: return;
+      }
+    })
+    .add('k', () => {
+      switch (currentBuffer.value) {
+        case EditorBuffer.Main: {
+          clipsStore.k();
+          break;
+        }
+        default: return;
+      }
+    })
+    .add(',', () => {
+      switch (currentBuffer.value) {
+        case EditorBuffer.Main: {
+          clipsStore.volumeDown();
+          break;
+        }
+        default: return;
+      }
+    })
+    .add('.', () => {
+      switch (currentBuffer.value) {
+        case EditorBuffer.Main: {
+          clipsStore.volumeUp();
+          break;
+        }
+        default: return;
+      }
+    })
+    .add('m', () => {
+      switch (currentBuffer.value) {
+        case EditorBuffer.Markers: {
+          markersStore.m();
+          break;
+        }
+        default: return;
+      }
+    })
+    .add('o', () => {
+      switch (currentBuffer.value) {
+        case EditorBuffer.Main: {
+          clipsStore.o();
+          break;
+        }
+        default: return;
+      }
+    })
+    .add('shift+<', () => {
+      clipsStore.slowDown();
+    })
+    .add('shift+>', () => {
+      clipsStore.speedUp();
+    })
+    .add('x', () => {
+      clipsStore.x();
+    })
+    .add('shift+x', () => {clipsStore.x(false);})
     .add('shift+h', () => {
       router.push('/')
+      currentBuffer.value = EditorBuffer.Home;
     })
     .add('shift+e', () => {
-      router.push('/editor')
+      router.push('/editor');
+      currentBuffer.value = EditorBuffer.Main;
     })
     .add('shift+l', () => { })
     .add('shift+?', () => { })
@@ -51,12 +116,38 @@ export const vimvid = defineStore('vimvid', () => {
     .add('ctrl+c', () => { })
     .add('ctrl+m', () => { })
     .add('0', () => { })
-    .add('shift+y', async () => {})
+    .add('shift+y', async () => { clipsStore.y(); })
     .add('ctrl+l', (e) => { e?.preventDefault(); })
-    .add('ctrl+o', (e) => {})
+    .add('ctrl+o', (e) => { if (e) clipsStore.open(e); })
+    .add('space', () => {
+      switch (currentBuffer.value) {
+        case EditorBuffer.Home: {
+          currentBuffer.value = EditorBuffer.Main;
+          router.push('/editor');
+          break;
+        }
+        case EditorBuffer.Main: {
+          currentBuffer.value = EditorBuffer.Secondary;
+          break;
+        }
+        case EditorBuffer.Secondary: {
+          currentBuffer.value = EditorBuffer.Clips;
+          break;
+        }
+        case EditorBuffer.Clips: {
+          currentBuffer.value = EditorBuffer.Markers;
+          break;
+        }
+        case EditorBuffer.Markers: {
+          currentBuffer.value = EditorBuffer.Home;
+          router.push('/home');
+          break;
+        }
+      }
+    })
 
   window.addEventListener('keydown', handler.handle)
-  
+
   return {
     currentId,
     currentBuffer,
