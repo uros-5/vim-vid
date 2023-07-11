@@ -9,7 +9,8 @@
       "jsdom"
     ],
     "lib": [
-      "ES2021.String"
+      "es2022",
+      "dom"
     ]
   }
 }

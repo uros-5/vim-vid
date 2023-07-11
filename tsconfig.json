@@ -17,9 +17,15 @@
       "./src/*"
     ]
   },
-  "plugins": [
-    {
-      "name": "typescript-vue-plugin"
-    }
-  ]
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "typescript-vue-plugin"
+      }
+    ],
+    "lib": [
+      "es2022",
+      "dom"
+    ]
+  }
 }
