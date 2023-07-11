@@ -13,10 +13,10 @@
 </template>
 
 <script setup lang="ts">
-import { vimvid } from '@/stores/vimvid'
 import StatusBarVideo from './StatusBarVideo.vue'
+import { useClips } from '@/stores/clips'
 
-const store = vimvid()
+const store = useClips()
 </script>
 
 <style scoped>

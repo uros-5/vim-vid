@@ -12,11 +12,11 @@
 </template>
 
 <script setup lang="ts">
-import { vimvid } from '@/stores/vimvid'
+import { useClips } from '@/stores/clips'
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-const store = vimvid()
+const store = useClips()
 const inputElement = ref(null as null | HTMLInputElement)
 const router = useRouter()
 

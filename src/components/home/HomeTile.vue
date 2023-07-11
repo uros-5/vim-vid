@@ -29,13 +29,13 @@
 </template>
 
 <script setup lang="ts">
-import { vimvid } from '@/stores/vimvid'
+import { useClips } from '@/stores/clips'
 import { onMounted, onUnmounted, ref } from 'vue'
 
 const props = defineProps<{ text: string; path: string; toAnimate: boolean; route: string }>()
 const currentSize = ref(120)
 let toUpdate = true
-const store = vimvid()
+const store = useClips()
 
 function resize() {
   let width = document.documentElement.clientWidth

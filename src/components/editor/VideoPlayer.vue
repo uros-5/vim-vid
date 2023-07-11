@@ -12,10 +12,10 @@
 </template>
 
 <script setup lang="ts">
-import { vimvid } from '@/stores/vimvid'
+import { useClips } from '@/stores/clips'
 import { onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
 
-const store = vimvid()
+const store = useClips()
 const videoElement = ref(null as HTMLVideoElement | null)
 let tempInterval = 0
 
@@ -41,7 +41,7 @@ const watcher = watch(videoElement, (n) => {
 })
 
 onMounted(() => {
-  tempInterval = setInterval(() => {
+  tempInterval = window.setInterval(() => {
     updateTime()
   }, 5000)
 })
