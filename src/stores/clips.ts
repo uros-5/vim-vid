@@ -97,9 +97,12 @@ export const useClips = defineStore("clips", () => {
         }
       }
     },
-    x() {
+    x(justOne = true) {
       if (clips.value.length > 0) {
-        clips.value.pop();
+        if (justOne) clips.value.pop();
+        else {
+          clips.value = [];
+        }
         saveLocalStorage('clips', clips.value);
         sound(EditorAction.DeleteLastClip);
       }
@@ -137,13 +140,13 @@ export const useClips = defineStore("clips", () => {
     },
     speedUp() {
       if (video.value) {
-        currentSpeed.value -= 0.3
+        currentSpeed.value += 0.3
         video.value.playbackRate = currentSpeed.value
       }
     },
     slowDown() {
       if (video.value) {
-        currentSpeed.value += 0.3
+        currentSpeed.value -= 0.3
         video.value.playbackRate = currentSpeed.value
       }
     },
