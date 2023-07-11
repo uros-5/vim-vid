@@ -13,16 +13,19 @@
 
 <script setup lang="ts">
 import { useClips } from '@/stores/clips'
+import { vimvid } from '@/stores/vimvid'
+import { EditorBuffer } from '@/stores/vimvid-types'
 import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
-const store = useClips()
+const clipsStore = useClips()
+const mainStore = vimvid()
 const inputElement = ref(null as null | HTMLInputElement)
 const router = useRouter()
 
 watch(inputElement, (n) => {
   if (n) {
-    store.setInput(n)
+    clipsStore.setInput(n)
   }
 })
 
@@ -36,7 +39,8 @@ function newFile(payload: Event) {
       router.push('/editor')
     } else {
       router.push('/editor')
-      store.saveOriginalVideo(tempBlob)
+      clipsStore.saveOriginalVideo(tempBlob)
+      mainStore.currentBuffer = EditorBuffer.Main
     }
   }
 }
