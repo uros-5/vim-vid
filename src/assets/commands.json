@@ -1,0 +1,120 @@
+{
+  "all": [
+    {
+      "command": "h",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "l",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "k",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": ".",
+      "action": "",
+      "description": "",
+    },
+    {
+      "command": "m",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "o",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "shift+<",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "shift+>",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "x",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "shift+x",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "shift+h",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "shift+e",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "shift+l",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "shift+?",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "shift+d",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "shift+m",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "ctrl+c",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "ctrl+m",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "0",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "shift+y",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "ctrl+l",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "ctrl+o",
+      "action": "",
+      "description": ""
+    },
+    {
+      "command": "space",
+      "action": "",
+      "description": ""
+    },
+      
+  ]
+}
