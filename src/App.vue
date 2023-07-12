@@ -9,11 +9,11 @@ import { useClips } from './stores/clips'
 const store = vimvid()
 const clipsStore = useClips()
 const route = useRoute()
-const screenRoutes = ['editor', 'help']
+const screenRoutes = ['editor']
 
 onMounted(() => {
   setTimeout(() => {
-    if (store.darkMode) document.querySelector('#app')?.classList.toggle('dark')
+    if (store.darkMode) document.querySelector('html')?.classList.toggle('dark')
   })
 })
 
@@ -27,10 +27,11 @@ function isRoute(): boolean {
 
 <template>
   <div
-    class="bg-gradient-to-b from-slate-300 from-20% dark:from-10% dark:from-slate-800 to-slate-500 dark:to-slate-600 w-full bg-no-repeat transition-[height]"
+    class=""
     :class="{
-      'h-full': route.name == 'home',
-      'h-screen': clipsStore.videoBlob == null && isRoute()
+      // 'h-full': route.name == 'home',
+      // 'h-screen': clipsStore.videoBlob == null && isRoute(),
+      // 'lg: h-full': route.name == 'help'
     }"
   >
     <transition name="header"> <MainHeader /> </transition>
