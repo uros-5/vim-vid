@@ -1,6 +1,6 @@
 <template>
   <!-- -->
-  <section class="m-auto w-4/5">
+  <section class="m-auto lg:w-4/5 lg:h-full">
     <div class="flex flex-col justify-center gap-6 px-3 my-6">
       <HelpIntroduction />
       <HelpTable />
