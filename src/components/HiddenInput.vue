@@ -38,7 +38,7 @@ function newFile(payload: Event) {
     } else {
       router.push('/editor')
       clipsStore.saveOriginalVideo(tempBlob)
-      mainStore.currentBuffer = EditorContext.Main
+      mainStore.currentContext = EditorContext.Main
     }
   }
 }

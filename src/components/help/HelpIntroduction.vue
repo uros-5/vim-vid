@@ -1,6 +1,6 @@
 <template>
   <p
-    class="text-2xl lg:text-3xl text-slate-950 dark:text-slate-200 lg:leading-[2.1em] text-justify selection:bg-green-700"
+    class="text-xl lg:text-3xl text-slate-950 dark:text-slate-200 lg:leading-[2.1em] lg:text-justify selection:bg-green-700"
   >
     Current keybindings depends on the
     <span @mouseover="contextHover" class="font-bold p-2 bg-slate-400 dark:bg-slate-800"
@@ -21,9 +21,7 @@
 </template>
 
 <script setup lang="ts">
-function contextHover(e: MouseEvent) {
-  console.log(e)
-}
+function contextHover(e: MouseEvent) {}
 </script>
 
 <style scoped></style>

@@ -5,7 +5,8 @@ export enum EditorContext {
   Main,
   Secondary,
   Clips,
-  Markers
+  Markers,
+  Help
 }
 
 export const Clip = z.object({
@@ -61,6 +62,7 @@ export function bufferStr(buffer: EditorContext): string {
     case EditorContext.Secondary: return "Secondary Video Player";
     case EditorContext.Clips: return "Clips";
     case EditorContext.Markers: return "Markers";
+    case EditorContext.Help: return "Help";
   }
 }
 

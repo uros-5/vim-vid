@@ -6,6 +6,7 @@ import router from '@/router'
 import { z } from 'zod'
 import { useClips } from './clips'
 import { useMarkers } from './markers'
+import { isComputedPropertyName } from 'typescript/lib/tsserverlibrary'
 
 export const vimvid = defineStore('vimvid', () => {
   const currentId = ref(0)
@@ -30,7 +31,6 @@ export const vimvid = defineStore('vimvid', () => {
     setTimeout(() => {
       if (old == last) {
         lastCommand.value = EditorAction.Nothing;
-        console.log('delete now')
       }
     }, 3000)
   })
@@ -43,6 +43,10 @@ export const vimvid = defineStore('vimvid', () => {
           clipsStore.h();
           break;
         }
+        case EditorContext.Clips: {
+          clipsStore.previous();
+          break;
+        }
         default: return;
       }
     })
@@ -50,6 +54,10 @@ export const vimvid = defineStore('vimvid', () => {
       switch (currentContext.value) {
         case EditorContext.Main: {
           clipsStore.l();
+          break;
+        }
+        case EditorContext.Clips: {
+          clipsStore.next();
           break;
         }
         default: return;
@@ -61,6 +69,26 @@ export const vimvid = defineStore('vimvid', () => {
           clipsStore.k();
           break;
         }
+        default: return;
+      }
+    })
+    .add('i', () => {
+      switch (currentContext.value) {
+        case EditorContext.Clips:
+          {
+            clipsStore.m(true);
+            break;
+          }
+        default: return;
+      }
+    })
+    .add('a', () => {
+      switch (currentContext.value) {
+        case EditorContext.Clips:
+          {
+            clipsStore.m(false);
+            break;
+          }
         default: return;
       }
     })
@@ -100,6 +128,16 @@ export const vimvid = defineStore('vimvid', () => {
         default: return;
       }
     })
+    .add('0', () => {
+      switch (currentContext.value) {
+        case EditorContext.Clips:
+          {
+            clipsStore.selected = 0;
+
+          }
+        default: break;
+      }
+    })
     .add('shift+<', () => {
       clipsStore.slowDown();
     })
@@ -107,32 +145,54 @@ export const vimvid = defineStore('vimvid', () => {
       clipsStore.speedUp();
     })
     .add('x', () => {
-      clipsStore.x();
+      switch (currentContext.value) {
+        case EditorContext.Main: clipsStore.x(true,false); break;
+        case EditorContext.Clips: clipsStore.x(true, true); break;
+        default: break;
+      }
     })
     .add('shift+x', () => { clipsStore.x(false); })
-    .add('shift+h', () => {
+    .add('shift+h', (e) => {
       router.push('/')
       currentContext.value = EditorContext.Home;
     })
-    .add('shift+e', () => {
+    .add('ctrl+h', (e) => {
+      e?.preventDefault();
+      router.push('/')
+      currentContext.value = EditorContext.Home;
+    })
+    .add('ctrl+e', (e) => {
+      e?.preventDefault();
       router.push('/editor');
       currentContext.value = EditorContext.Main;
     })
+    .add('shift+?', () => {
+      router.push('/help');
+      currentContext.value = EditorContext.Main;
+    })
     .add('shift+l', () => { })
-    .add('shift+?', () => { })
+    .add('ctrl+?', () => { })
     .add('shift+d', () => {
-      const data = document.querySelector('#app')?.classList.toggle('dark')
+      const data = document.querySelector('html')?.classList.toggle('dark')
       saveLocalStorage('darkMode', data);
     })
-    .add('shift+m', () => { })
-    .add('ctrl+c', () => { })
-    .add('ctrl+m', () => { })
-    .add('0', () => { })
     .add('shift+y', async () => { clipsStore.y(); })
-    .add('ctrl+l', (e) => { e?.preventDefault(); })
     .add('ctrl+o', (e) => { if (e) clipsStore.open(e); })
+    .add('shift+m', () => { })
+    .add('ctrl+a', (e) => {
+      e?.preventDefault();
+      currentContext.value = EditorContext.Clips;
+    })
+    .add('ctrl+m', () => {
+      currentContext.value = EditorContext.Markers;
+    })
+    .add('0', () => { })
+    .add('escape', (e) => {
+      e?.preventDefault();
+      currentContext.value = EditorContext.Main;
+    })
     .add('space', () => {
-    return ;
+      return;
       // switch (currentContext.value) {
       //   case EditorContext.Home: {
       //     currentContext.value = EditorContext.Main;
@@ -163,7 +223,7 @@ export const vimvid = defineStore('vimvid', () => {
 
   return {
     currentId,
-    currentBuffer: currentContext,
+    currentContext,
     lastCommand,
     version,
     isSaved,

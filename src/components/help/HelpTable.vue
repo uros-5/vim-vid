@@ -7,26 +7,37 @@
         <tr>
           <th scope="col" class="px-6 py-3">Command</th>
           <th scope="col" class="px-6 py-3">Action</th>
-          <th scope="col" class="px-6 py-3">Description</th>
+          <th scope="col" class="px-6 py-3">Aditional info</th>
         </tr>
       </thead>
       <tbody>
-        <tr class="bg-slate-300 border-b dark:bg-slate-800 dark:border-gray-700">
+        <tr
+          v-for="(item, index) in commands.all"
+          :key="item.command"
+          :data-index="index"
+          class="bg-slate-300 border-b dark:bg-slate-800 dark:border-gray-700"
+        >
           <th
             scope="row"
             class="px-6 py-4 font-bold text-sm lg:text-lg text-slate-900 whitespace-nowrap dark:text-white"
           >
-            i
+            {{ item.command }}
           </th>
-          <td class="px-6 py-4 text-sm lg:text-lg text-slate-800 dark:text-slate-200">Silver</td>
-          <td class="px-6 py-4 text-sm lg:text-lg text-slate-800 dark:text-slate-200">Laptop</td>
+          <td class="px-6 py-4 text-sm lg:text-lg text-slate-800 dark:text-slate-200">
+            {{ item.action }}
+          </td>
+          <td class="px-6 py-4 text-sm lg:text-lg text-slate-800 dark:text-slate-200">
+            {{ item.info }}
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import commands from '@/assets/commands.json'
+</script>
 
 <style scoped>
 thead {

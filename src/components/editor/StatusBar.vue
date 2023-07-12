@@ -6,7 +6,7 @@
       :class="{ 'h-[80px] lg:h-3/5 ': isEmpty }"
     >
       <TransitionGroup name="sbv">
-        <StatusBarVideo v-for="i in store.clips" :key="i.id" :clip="i" />
+        <StatusBarVideo v-for="(i, index) in store.clips" :key="i.id" :clip="i" :index="index" />
 
         <div
           class="flex text-center justify-center text-black dark:text-white font-semibold"

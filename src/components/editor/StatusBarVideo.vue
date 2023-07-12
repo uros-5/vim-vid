@@ -2,7 +2,10 @@
   <div
     class="flex flex-col align-center p-3 border-0 border-r border-slate-400 dark:border-slate-800 mr-2"
   >
-    <p class="text-center lg:text-2xl dark:text-slate-300 font-bold">
+    <p
+      class="text-center lg:text-2xl dark:text-slate-300 font-bold"
+      :class="{ 'bg-slate-900': clipsStore.selected == props.index }"
+    >
       <span class="font-thin">#</span>{{ props.clip.id }}
     </p>
 
@@ -31,11 +34,10 @@
 </template>
 
 <script setup lang="ts">
+import { useClips } from '@/stores/clips'
 import type { Clip } from '@/stores/vimvid-types'
-
-//
-
-const props = defineProps<{ clip: Clip }>()
+const props = defineProps<{ clip: Clip; index: number }>()
+const clipsStore = useClips()
 </script>
 
 <style scoped>

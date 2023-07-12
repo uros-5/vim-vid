@@ -1,12 +1,14 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
-import { emptyClip, type Clips, EditorAction } from "./vimvid-types";
+import { ref, watch } from "vue";
+import { emptyClip, type Clips, EditorAction, EditorContext } from "./vimvid-types";
 import startSound from '@/assets/sounds/start.ogg'
 import stopSound from '@/assets/sounds/stop.ogg'
 import deleteSound from '@/assets/sounds/delete.ogg'
-import { saveLocalStorage } from "./vimvid";
+import { saveLocalStorage, vimvid } from "./vimvid";
+import type { Clip } from "./vimvid-types";
 
 export const useClips = defineStore("clips", () => {
+  const mainStore = vimvid();
   const video = ref(null as HTMLVideoElement | null)
   const fileElem = ref(null as HTMLInputElement | null)
   const videoBlob = ref(null as null | Blob)
@@ -17,7 +19,17 @@ export const useClips = defineStore("clips", () => {
   const step = ref(3)
   const recordingClip = ref(emptyClip());
   const volume = ref(1);
+  const selected = ref(0);
+  const deletedClip = ref(null as null | Clip)
   const otherVideo = ref(null as HTMLVideoElement | null)
+
+  watch(clips, (n) => {
+    switch (mainStore.currentContext) {
+      case EditorContext.Main: selected.value = n.length - 1; break;
+      default: break;
+    }
+
+  }, { deep: true })
 
   function sound(action: EditorAction) {
     let audio;
@@ -46,6 +58,7 @@ export const useClips = defineStore("clips", () => {
     step,
     recordingClip,
     volume,
+    selected,
     h() {
       if (video.value) video.value.currentTime! -= step.value
     },
@@ -97,15 +110,30 @@ export const useClips = defineStore("clips", () => {
         }
       }
     },
-    x(justOne = true) {
+    x(justOne = true, isSelected = false) {
       if (clips.value.length > 0) {
-        if (justOne) clips.value.pop();
+        if (justOne) {
+          deletedClip.value = isSelected ? clips.value.splice(selected.value, 1)[0] : clips.value.pop()!;
+        }
         else {
           clips.value = [];
         }
         saveLocalStorage('clips', clips.value);
         sound(EditorAction.DeleteLastClip);
       }
+    },
+    m(before = true) {
+      if (deletedClip.value) {
+        const n = before ? selected.value : selected.value + 1;
+        const start = clips.value.slice(0, n);
+        const end = clips.value.slice(n);
+        start.push(deletedClip.value);
+        clips.value = start.concat(end);
+        deletedClip.value = null;
+        saveLocalStorage('clips', clips.value);
+        sound(EditorAction.StopRecording);
+      }
+
     },
     async y() {
       if (clips.value.length > 0) {
@@ -174,6 +202,22 @@ export const useClips = defineStore("clips", () => {
     setTime(time: number) {
       lastTime.value = time
       saveLocalStorage('lastTime', time)
+    },
+    previous() {
+      if (selected.value <= 0) {
+        selected.value = 0;
+      }
+      else {
+        selected.value -= 1;
+      }
+    },
+    next() {
+      if (selected.value >= clips.value.length - 1) {
+        selected.value = clips.value.length - 1;
+      }
+      else {
+        selected.value += 1;
+      }
     }
   }
 });
