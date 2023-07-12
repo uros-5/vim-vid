@@ -27,15 +27,12 @@ export const vimvid = defineStore('vimvid', () => {
   watch(lastCommand, () => {
     last += 1;
     const old = last;
-    console.log(old)
     setTimeout(() => {
-      console.log(old, last)
       if (old == last) {
         lastCommand.value = "";
       }
     }, 3000)
-    console.log(old)
-  }, {deep: true})
+  }, { deep: true })
 
   const handler = keys()
   handler
@@ -151,7 +148,7 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('shift+$', () => {
-      lastCommand.value = "shift+$"; 
+      lastCommand.value = "shift+$";
       switch (currentContext.value) {
         case EditorContext.Clips:
           {
@@ -162,15 +159,15 @@ export const vimvid = defineStore('vimvid', () => {
 
     })
     .add('shift+<', () => {
-      lastCommand.value = "shift+<"; 
+      lastCommand.value = "shift+<";
       clipsStore.slowDown();
     })
     .add('shift+>', () => {
-      lastCommand.value = "shift+>"; 
+      lastCommand.value = "shift+>";
       clipsStore.speedUp();
     })
     .add('x', () => {
-      lastCommand.value = "x"; 
+      lastCommand.value = "x";
       switch (currentContext.value) {
         case EditorContext.Main: clipsStore.x(true, false); break;
         case EditorContext.Clips: clipsStore.x(true, true); break;
@@ -178,53 +175,58 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('shift+x', () => {
-      lastCommand.value = "shift+x"; 
-       clipsStore.x(false); })
+      lastCommand.value = "shift+x";
+      clipsStore.x(false);
+    })
     .add('shift+h', (e) => {
-      lastCommand.value = "shift+h"; 
+      lastCommand.value = "shift+h";
       router.push('/')
       currentContext.value = EditorContext.Home;
     })
     .add('shift+h', (e) => {
-      lastCommand.value = "shift+h"; 
+      lastCommand.value = "shift+h";
       e?.preventDefault();
       router.push('/')
       currentContext.value = EditorContext.Home;
     })
     .add('e', (e) => {
-      lastCommand.value = "e"; 
       e?.preventDefault();
+      lastCommand.value = "e";
       router.push('/editor');
       currentContext.value = EditorContext.Main;
+      window.scrollTo(0, 0)
     })
     .add('shift+?', (e) => {
-      lastCommand.value = "shift+?"; 
+      lastCommand.value = "shift+?";
       router.push('/help');
       currentContext.value = EditorContext.Main;
     })
     .add('shift+l', () => {
-      lastCommand.value = "shift+l"; 
-         })
+      lastCommand.value = "shift+l";
+    })
     .add('ctrl+?', () => {
-      lastCommand.value = "ctrl+?"; 
-         })
+      lastCommand.value = "ctrl+?";
+    })
     .add('shift+d', () => {
-      lastCommand.value = "shift+d"; 
+      lastCommand.value = "shift+d";
       const data = document.querySelector('html')?.classList.toggle('dark')
       saveLocalStorage('darkMode', data);
     })
     .add('shift+y', async () => {
-      lastCommand.value = "shift+y"; 
-    
-     clipsStore.y(); })
+      lastCommand.value = "shift+y";
+
+      clipsStore.y();
+    })
     .add('ctrl+o', (e) => {
-      lastCommand.value = "ctrl+o"; 
-         if (e) clipsStore.open(e); })
+      lastCommand.value = "ctrl+o";
+      if (e) clipsStore.open(e);
+    })
     .add('shift+m', () => {
-      lastCommand.value = "shift+m"; 
-     })
-    .add('c', () => {
-      lastCommand.value = "c"; 
+      lastCommand.value = "shift+m";
+    })
+    .add('c', (e) => {
+      e?.preventDefault();
+      lastCommand.value = "c";
       currentContext.value = EditorContext.Clips;
     })
     .add('ctrl+m', () => {
@@ -232,45 +234,23 @@ export const vimvid = defineStore('vimvid', () => {
     })
     .add('0', () => { })
     .add('escape', (e) => {
-      lastCommand.value = "escape"; 
+      lastCommand.value = "escape";
       e?.preventDefault();
       currentContext.value = EditorContext.Main;
     })
     .add('enter', (e) => {
-      lastCommand.value = "enter"; 
       e?.preventDefault();
+      lastCommand.value = "enter";
       switch (currentContext.value) {
         case EditorContext.Clips: {
-          console.log(clipsStore.selected);
+          clipsStore.enter();
+          break;
         }
+        default: break;
       }
     })
     .add('space', () => {
       return;
-      // switch (currentContext.value) {
-      //   case EditorContext.Home: {
-      //     currentContext.value = EditorContext.Main;
-      //     router.push('/editor');
-      //     break;
-      //   }
-      //   case EditorContext.Main: {
-      //     currentContext.value = EditorContext.Secondary;
-      //     break;
-      //   }
-      //   case EditorContext.Secondary: {
-      //     currentContext.value = EditorContext.Clips;
-      //     break;
-      //   }
-      //   case EditorContext.Clips: {
-      //     currentContext.value = EditorContext.Markers;
-      //     break;
-      //   }
-      //   case EditorContext.Markers: {
-      //     currentContext.value = EditorContext.Home;
-      //     router.push('/home');
-      //     break;
-      //   }
-      // }
     })
 
   window.addEventListener('keydown', handler.handle)

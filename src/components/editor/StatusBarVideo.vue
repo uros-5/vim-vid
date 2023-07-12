@@ -39,19 +39,28 @@
 
 <script setup lang="ts">
 import { useClips } from '@/stores/clips'
-import type { Clip } from '@/stores/vimvid-types'
+import { vimvid } from '@/stores/vimvid'
+import { EditorContext, type Clip } from '@/stores/vimvid-types'
 import { onMounted, ref, watch } from 'vue'
+
 const props = defineProps<{ clip: Clip; index: number }>()
 const clipsStore = useClips()
+const mainStore = vimvid()
+
 const elem = ref(null as null | HTMLElement)
 
 watch(elem, (n) => {
   if (n) {
-    setTimeout(() => n.scrollIntoView(), 300)
+    if (mainStore.currentContext == EditorContext.Clips)
+      setTimeout(() => {
+        n.scrollIntoView()
+      }, 300)
   }
 })
 
-onMounted(() => elem?.value?.scrollIntoView())
+onMounted(() => {
+  if (mainStore.currentContext == EditorContext.Clips) elem?.value?.scrollIntoView()
+})
 </script>
 
 <style scoped>

@@ -35,7 +35,8 @@ export const useClips = defineStore("clips", () => {
   }, { deep: true })
 
   watch(selected, (n) => {
-    scrollTo(n)
+    if (mainStore.currentContext == EditorContext.Clips)
+      scrollTo(n)
   })
 
   function sound(action: EditorAction) {
@@ -51,7 +52,6 @@ export const useClips = defineStore("clips", () => {
     }
     const a = new Audio(audio);
     a.volume = volume.value
-    console.log(volume.value)
     a.play();
   }
 
@@ -67,6 +67,7 @@ export const useClips = defineStore("clips", () => {
     recordingClip,
     volume,
     selected,
+    otherVideo,
     h() {
       if (video.value) video.value.currentTime! -= step.value
     },
@@ -225,6 +226,23 @@ export const useClips = defineStore("clips", () => {
       }
       else {
         selected.value += 1;
+      }
+    },
+    enter() {
+      if (!video.value) return;
+      const clip = clips.value.at(selected.value);
+      if (clip) {
+        mainStore.currentContext = EditorContext.Secondary;
+        setTimeout(() => {
+          window.scrollTo(0,0);
+          const t = clip.end - clip.start;
+          video.value?.pause();
+          otherVideo.value!.currentTime = clip.start;
+          otherVideo.value!.play();
+          setTimeout(() => {
+              mainStore.currentContext = EditorContext.Main;
+          }, t * 1000)
+        },500);
       }
     }
   }
