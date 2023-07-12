@@ -1,10 +1,14 @@
 <template>
   <div
     class="flex flex-col align-center p-3 border-0 border-r border-slate-400 dark:border-slate-800 mr-2"
+    ref="elem"
   >
     <p
       class="text-center lg:text-2xl dark:text-slate-300 font-bold"
-      :class="{ 'bg-slate-900': clipsStore.selected == props.index }"
+      :class="{
+        'border border-black dark:border-white bg-slate-300 dark:bg-slate-900':
+          clipsStore.selected == props.index
+      }"
     >
       <span class="font-thin">#</span>{{ props.clip.id }}
     </p>
@@ -36,8 +40,18 @@
 <script setup lang="ts">
 import { useClips } from '@/stores/clips'
 import type { Clip } from '@/stores/vimvid-types'
+import { onMounted, ref, watch } from 'vue'
 const props = defineProps<{ clip: Clip; index: number }>()
 const clipsStore = useClips()
+const elem = ref(null as null | HTMLElement)
+
+watch(elem, (n) => {
+  if (n) {
+    setTimeout(() => n.scrollIntoView(), 300)
+  }
+})
+
+onMounted(() => elem?.value?.scrollIntoView())
 </script>
 
 <style scoped>

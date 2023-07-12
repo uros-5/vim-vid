@@ -25,11 +25,18 @@ export const useClips = defineStore("clips", () => {
 
   watch(clips, (n) => {
     switch (mainStore.currentContext) {
-      case EditorContext.Main: selected.value = n.length - 1; break;
+      case EditorContext.Main: {
+        selected.value = n.length - 1;
+        break;
+      }
       default: break;
     }
 
   }, { deep: true })
+
+  watch(selected, (n) => {
+    scrollTo(n)
+  })
 
   function sound(action: EditorAction) {
     let audio;
@@ -44,6 +51,7 @@ export const useClips = defineStore("clips", () => {
     }
     const a = new Audio(audio);
     a.volume = volume.value
+    console.log(volume.value)
     a.play();
   }
 
@@ -65,10 +73,13 @@ export const useClips = defineStore("clips", () => {
     l() {
       if (video.value) video.value.currentTime! += step.value
     },
-    k() {
+    k(): boolean {
       if (video.value) {
-        video.value.paused ? video.value.play() : video.value.pause()
+        video.value.paused ? video.value.play() : video.value.pause();
+        return video.value.paused
       }
+      return false;
+
     },
     o() {
       if (video.value) {
@@ -99,10 +110,6 @@ export const useClips = defineStore("clips", () => {
               recordingClip.value.id = id;
               clips.value.push(recordingClip.value);
               recordingClip.value = emptyClip();
-              let elem = document.querySelector('#statusbar');
-              if (elem) {
-                elem.scrollLeft = elem.scrollWidth;
-              }
               saveLocalStorage('clips', clips.value);
               sound(EditorAction.StopRecording);
               break;
@@ -156,15 +163,16 @@ export const useClips = defineStore("clips", () => {
       }
     },
     volumeUp() {
-      if (volume.value <= 1) {
-        volume.value += 0.1;
+      volume.value += 0.2;
+      if (volume.value >= 1) {
+        volume.value = 1;
       }
     },
     volumeDown() {
-      if (volume.value <= 1) {
-        volume.value -= 0.1;
+      volume.value -= 0.2;
+      if (volume.value <= 0) {
+        volume.value = 0.1;
       }
-      else { volume.value = 1; }
     },
     speedUp() {
       if (video.value) {
@@ -224,5 +232,12 @@ export const useClips = defineStore("clips", () => {
 
 function randomId() {
   return Math.floor(Math.random() * 1000);
+}
+
+function scrollTo(id: number, end = false) {
+  let elem = document.querySelector('#statusbar');
+  if (elem)
+    elem?.children[id]?.scrollIntoView()
+
 }
 
