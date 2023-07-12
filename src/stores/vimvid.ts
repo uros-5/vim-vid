@@ -6,12 +6,11 @@ import router from '@/router'
 import { z } from 'zod'
 import { useClips } from './clips'
 import { useMarkers } from './markers'
-import { isComputedPropertyName } from 'typescript/lib/tsserverlibrary'
 
 export const vimvid = defineStore('vimvid', () => {
   const currentId = ref(0)
   const currentContext = ref(EditorContext.Home as EditorContext)
-  const lastCommand = ref(EditorAction.Nothing);
+  const lastCommand = ref("");
   const version = '0.0.0'
   const isSaved = ref(false)
   const ls = readLocalStorage();
@@ -28,16 +27,20 @@ export const vimvid = defineStore('vimvid', () => {
   watch(lastCommand, () => {
     last += 1;
     const old = last;
+    console.log(old)
     setTimeout(() => {
+      console.log(old, last)
       if (old == last) {
-        lastCommand.value = EditorAction.Nothing;
+        lastCommand.value = "";
       }
     }, 3000)
-  })
+    console.log(old)
+  }, {deep: true})
 
   const handler = keys()
   handler
     .add('h', () => {
+      lastCommand.value = "h";
       switch (currentContext.value) {
         case EditorContext.Main: {
           clipsStore.h();
@@ -51,6 +54,7 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('l', () => {
+      lastCommand.value = "l";
       switch (currentContext.value) {
         case EditorContext.Main: {
           clipsStore.l();
@@ -64,6 +68,7 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('k', () => {
+      lastCommand.value = "k";
       switch (currentContext.value) {
         case EditorContext.Main: {
           clipsStore.k();
@@ -73,6 +78,7 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('i', () => {
+      lastCommand.value = "i";
       switch (currentContext.value) {
         case EditorContext.Clips:
           {
@@ -83,6 +89,7 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('a', () => {
+      lastCommand.value = "a";
       switch (currentContext.value) {
         case EditorContext.Clips:
           {
@@ -93,6 +100,7 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add(',', () => {
+      lastCommand.value = ",";
       switch (currentContext.value) {
         case EditorContext.Main: {
           clipsStore.volumeDown();
@@ -102,6 +110,7 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('.', () => {
+      lastCommand.value = ".";
       switch (currentContext.value) {
         case EditorContext.Main: {
           clipsStore.volumeUp();
@@ -111,6 +120,7 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('m', () => {
+      lastCommand.value = "m";
       switch (currentContext.value) {
         case EditorContext.Markers: {
           markersStore.m();
@@ -120,6 +130,7 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('o', () => {
+      lastCommand.value = "o";
       switch (currentContext.value) {
         case EditorContext.Main: {
           clipsStore.o();
@@ -129,6 +140,7 @@ export const vimvid = defineStore('vimvid', () => {
       }
     })
     .add('0', () => {
+      lastCommand.value = "0";
       switch (currentContext.value) {
         case EditorContext.Clips:
           {
@@ -138,58 +150,100 @@ export const vimvid = defineStore('vimvid', () => {
         default: break;
       }
     })
+    .add('shift+$', () => {
+      lastCommand.value = "shift+$"; 
+      switch (currentContext.value) {
+        case EditorContext.Clips:
+          {
+            clipsStore.selected = clipsStore.clips.length - 1;
+          }
+        default: break;
+      }
+
+    })
     .add('shift+<', () => {
+      lastCommand.value = "shift+<"; 
       clipsStore.slowDown();
     })
     .add('shift+>', () => {
+      lastCommand.value = "shift+>"; 
       clipsStore.speedUp();
     })
     .add('x', () => {
+      lastCommand.value = "x"; 
       switch (currentContext.value) {
-        case EditorContext.Main: clipsStore.x(true,false); break;
+        case EditorContext.Main: clipsStore.x(true, false); break;
         case EditorContext.Clips: clipsStore.x(true, true); break;
         default: break;
       }
     })
-    .add('shift+x', () => { clipsStore.x(false); })
+    .add('shift+x', () => {
+      lastCommand.value = "shift+x"; 
+       clipsStore.x(false); })
     .add('shift+h', (e) => {
+      lastCommand.value = "shift+h"; 
       router.push('/')
       currentContext.value = EditorContext.Home;
     })
-    .add('ctrl+h', (e) => {
+    .add('shift+h', (e) => {
+      lastCommand.value = "shift+h"; 
       e?.preventDefault();
       router.push('/')
       currentContext.value = EditorContext.Home;
     })
-    .add('ctrl+e', (e) => {
+    .add('e', (e) => {
+      lastCommand.value = "e"; 
       e?.preventDefault();
       router.push('/editor');
       currentContext.value = EditorContext.Main;
     })
-    .add('shift+?', () => {
+    .add('shift+?', (e) => {
+      lastCommand.value = "shift+?"; 
       router.push('/help');
       currentContext.value = EditorContext.Main;
     })
-    .add('shift+l', () => { })
-    .add('ctrl+?', () => { })
+    .add('shift+l', () => {
+      lastCommand.value = "shift+l"; 
+         })
+    .add('ctrl+?', () => {
+      lastCommand.value = "ctrl+?"; 
+         })
     .add('shift+d', () => {
+      lastCommand.value = "shift+d"; 
       const data = document.querySelector('html')?.classList.toggle('dark')
       saveLocalStorage('darkMode', data);
     })
-    .add('shift+y', async () => { clipsStore.y(); })
-    .add('ctrl+o', (e) => { if (e) clipsStore.open(e); })
-    .add('shift+m', () => { })
-    .add('ctrl+a', (e) => {
-      e?.preventDefault();
+    .add('shift+y', async () => {
+      lastCommand.value = "shift+y"; 
+    
+     clipsStore.y(); })
+    .add('ctrl+o', (e) => {
+      lastCommand.value = "ctrl+o"; 
+         if (e) clipsStore.open(e); })
+    .add('shift+m', () => {
+      lastCommand.value = "shift+m"; 
+     })
+    .add('c', () => {
+      lastCommand.value = "c"; 
       currentContext.value = EditorContext.Clips;
     })
     .add('ctrl+m', () => {
-      currentContext.value = EditorContext.Markers;
+      // currentContext.value = EditorContext.Markers;
     })
     .add('0', () => { })
     .add('escape', (e) => {
+      lastCommand.value = "escape"; 
       e?.preventDefault();
       currentContext.value = EditorContext.Main;
+    })
+    .add('enter', (e) => {
+      lastCommand.value = "enter"; 
+      e?.preventDefault();
+      switch (currentContext.value) {
+        case EditorContext.Clips: {
+          console.log(clipsStore.selected);
+        }
+      }
     })
     .add('space', () => {
       return;

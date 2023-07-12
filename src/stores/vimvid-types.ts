@@ -73,8 +73,8 @@ export function actionStr(action: EditorAction): string {
   case EditorAction.GoRight: return "Right";
   case EditorAction.GoUp: return "";
   case EditorAction.GoDown: return "";
-  case EditorAction.StartRecording: return "Started recording";
-  case EditorAction.StopRecording: return "Stopped recording";
+  case EditorAction.StartRecording: return "Recorded";
+  case EditorAction.StopRecording: return "Recorded";
   case EditorAction.Play: return "Play";
   case EditorAction.Pause: return "Pause";
   case EditorAction.DeleteLastClip: return "Last clip deleted";
