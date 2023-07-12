@@ -2,119 +2,128 @@
   "all": [
     {
       "command": "h",
-      "action": "",
-      "description": ""
+      "action": "go backwards one step",
+      "info": "In clips context this will go left"
     },
     {
       "command": "l",
-      "action": "",
-      "description": ""
+      "action": "go forwards one step",
+      "info": "In clips context this will go right"
     },
     {
       "command": "k",
-      "action": "",
-      "description": ""
+      "action": "play/pause current video",
+      "info": "In markers context this will go up"
     },
     {
-      "command": ".",
-      "action": "",
-      "description": "",
-    },
-    {
-      "command": "m",
-      "action": "",
-      "description": ""
+      "command": "j",
+      "action": "go down",
+      "info": "In markers context this will go in down"
     },
     {
       "command": "o",
-      "action": "",
-      "description": ""
+      "action": "start/stop recording",
+      "info": "Available only in main context"
+    },
+    {
+      "command": ".",
+      "action": "increase volume of action sound",
+      "info": "Available only in main context"
+    },
+    {
+      "command": ",",
+      "action": "decrease volume of action sound",
+      "info": "Available only in main context"
+    },
+    {
+      "command": "m",
+      "action": "create marker",
+      "info": "Adds last clip to markers"
     },
     {
       "command": "shift+<",
-      "action": "",
-      "description": ""
+      "action": "slow down video",
+      "info": "Available only in main context"
     },
     {
       "command": "shift+>",
-      "action": "",
-      "description": ""
+      "action": "speed up video",
+      "info": "Available only in main context"
     },
     {
       "command": "x",
-      "action": "",
-      "description": ""
+      "action": "delete last recorded clip",
+      "info": "In markers mode it deletes selected marker"
     },
     {
       "command": "shift+x",
-      "action": "",
-      "description": ""
+      "action": "delete all clips",
+      "info": "In markers mode it deletes all markers"
     },
     {
-      "command": "shift+h",
-      "action": "",
-      "description": ""
+      "command": "ctrl+h",
+      "action": "redirect to home page",
+      "info": "Available in every context"
     },
     {
-      "command": "shift+e",
-      "action": "",
-      "description": ""
+      "command": "ctrl+e",
+      "action": "redirect to editor page",
+      "info": "Available in every context"
+    },
+    {
+      "command": "ctrl+?",
+      "action": "redirect to help page",
+      "info": "Available in every context"
+    },
+    {
+      "command": "shift+y",
+      "action": "copy ffmpeg commands to clipboard",
+      "info": "Available in every context"
     },
     {
       "command": "shift+l",
       "action": "",
-      "description": ""
-    },
-    {
-      "command": "shift+?",
-      "action": "",
-      "description": ""
+      "info": ""
     },
     {
       "command": "shift+d",
       "action": "",
-      "description": ""
+      "info": ""
     },
     {
       "command": "shift+m",
       "action": "",
-      "description": ""
+      "info": ""
     },
     {
       "command": "ctrl+c",
       "action": "",
-      "description": ""
+      "info": ""
     },
     {
       "command": "ctrl+m",
       "action": "",
-      "description": ""
+      "info": ""
     },
     {
       "command": "0",
       "action": "",
-      "description": ""
-    },
-    {
-      "command": "shift+y",
-      "action": "",
-      "description": ""
+      "info": ""
     },
     {
       "command": "ctrl+l",
       "action": "",
-      "description": ""
+      "info": ""
     },
     {
       "command": "ctrl+o",
       "action": "",
-      "description": ""
+      "info": ""
     },
     {
       "command": "space",
       "action": "",
-      "description": ""
-    },
-      
+      "info": ""
+    }
   ]
 }
