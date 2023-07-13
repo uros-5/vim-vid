@@ -1,0 +1,26 @@
+{
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "include": [
+    "vite.config.*",
+    "vitest.config.*",
+    "cypress.config.*",
+    "nightwatch.conf.*",
+    "playwright.config.*"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "module": "ESNext",
+    "types": [
+      "node"
+    ],
+    "plugins": [
+      {
+        "name": "typescript-vue-plugin"
+      }
+    ],
+    "lib": [
+      "es2022",
+      "dom"
+    ]
+  }
+}

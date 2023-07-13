@@ -1,0 +1,134 @@
+{
+  "all": [
+    {
+      "command": "h",
+      "action": "go backwards one step",
+      "info": "In clips context this will go left"
+    },
+    {
+      "command": "l",
+      "action": "go forwards one step",
+      "info": "In clips context this will go right"
+    },
+    {
+      "command": "k",
+      "action": "play/pause current video",
+      "info": "In markers context this will go up"
+    },
+    {
+      "command": "j",
+      "action": "go down",
+      "info": "In markers context this will go down"
+    },
+    {
+      "command": "o",
+      "action": "start/stop recording",
+      "info": "Available only in main context"
+    },
+    {
+      "command": "i",
+      "action": "paste deleted clip before current selection",
+      "info": "In markers/clip context this will paste clip before current marker/clip"
+    },
+    {
+      "command": "a",
+      "action": "paste deleted clip after current selection",
+      "info": "In markers/clip context this will paste clip after current marker/clip"
+    },
+    {
+      "command": ".",
+      "action": "increase volume of video player",
+      "info": "In clips context it will increase action volume."
+    },
+    {
+      "command": ",",
+      "action": "lower the volume of video player",
+      "info": "In clips context it will lower action volume."
+    },
+    {
+      "command": "m",
+      "action": "create marker",
+      "info": "Adds selected clip to markers"
+    },
+    {
+      "command": "shift+m",
+      "action": "check markers",
+      "info": "Opens markers modal where you can select marker"
+    },
+    {
+      "command": "shift+<",
+      "action": "slow down video",
+      "info": "Available only in main context"
+    },
+    {
+      "command": "shift+>",
+      "action": "speed up video",
+      "info": "Available only in main context"
+    },
+    {
+      "command": "x",
+      "action": "delete last recorded clip",
+      "info": "In markers mode it deletes selected marker"
+    },
+    {
+      "command": "shift+x",
+      "action": "delete all clips",
+      "info": "In markers mode it deletes all markers"
+    },
+    {
+      "command": "shift+h",
+      "action": "redirect to home page",
+      "info": "Available in every context"
+    },
+    {
+      "command": "e",
+      "action": "redirect to editor page",
+      "info": "Available in every context"
+    },
+    {
+      "command": "c",
+      "action": "redirect to clips context",
+      "info": "Available in every context"
+    },
+    {
+      "command": "shift+?",
+      "action": "redirect to help page",
+      "info": "Available in every context"
+    },
+    {
+      "command": "shift+y",
+      "action": "copy ffmpeg commands to clipboard",
+      "info": "Available in every context"
+    },
+    {
+      "command": "0",
+      "action": "go to first frame of video",
+      "info": "In clips context it will select first clip"
+    },
+    {
+      "command": "shift+$",
+      "action": "go to last frame of video",
+      "info": "In clips context it will select last clip"
+    },
+    {
+      "command": "space",
+      "action": "play selected video in clips",
+      "info": "Available only in clips context"
+    },
+    {
+      "command": "shift+d",
+      "action": "toggle dark mode",
+      "info": "Available only in every context"
+    },
+    {
+      "command": "ctrl+0",
+      "action": "opens your mp4 file",
+      "info": "Available only in every context"
+    },
+    {
+      "command": "escape",
+      "action": "go to main mode",
+      "info": "Available only in every context"
+    }
+  ]
+}
