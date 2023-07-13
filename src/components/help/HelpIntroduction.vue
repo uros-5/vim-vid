@@ -21,7 +21,7 @@
     >).<br />
     In future releases we will enable modifying default keybindings through simple JSON file. For
     now check table down bellow or read source code(<i>TypeScript</i>)
-    <a class="underline underline-offset-4" href="https://github.com">here</a>.
+    <a class="underline underline-offset-4" href="https://github.com/uros-5/vim-vid">here</a>.
     <br />
     If you are using Vimium in browser then be sure to disable it for this app.
   </p>
