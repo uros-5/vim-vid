@@ -118,17 +118,17 @@
     {
       "command": "shift+d",
       "action": "toggle dark mode",
-      "info": "Available only in every context"
+      "info": "Available in every context"
     },
     {
       "command": "ctrl+0",
       "action": "opens your mp4 file",
-      "info": "Available only in every context"
+      "info": "Available in every context"
     },
     {
       "command": "escape",
       "action": "go to main mode",
-      "info": "Available only in every context"
+      "info": "Available in every context"
     }
   ]
 }
