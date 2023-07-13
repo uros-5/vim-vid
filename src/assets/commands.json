@@ -18,7 +18,7 @@
     {
       "command": "j",
       "action": "go down",
-      "info": "In markers context this will go in down"
+      "info": "In markers context this will go down"
     },
     {
       "command": "o",
@@ -26,19 +26,34 @@
       "info": "Available only in main context"
     },
     {
+      "command": "i",
+      "action": "paste deleted clip before current selection",
+      "info": "In markers/clip context this will paste clip before current marker/clip"
+    },
+    {
+      "command": "a",
+      "action": "paste deleted clip after current selection",
+      "info": "In markers/clip context this will paste clip after current marker/clip"
+    },
+    {
       "command": ".",
-      "action": "increase volume of action sound",
-      "info": "Available only in main context"
+      "action": "increase volume of video player",
+      "info": "In clips context it will increase action volume."
     },
     {
       "command": ",",
-      "action": "decrease volume of action sound",
-      "info": "Available only in main context"
+      "action": "lower the volume of video player",
+      "info": "In clips context it will lower action volume."
     },
     {
       "command": "m",
       "action": "create marker",
-      "info": "Adds last clip to markers"
+      "info": "Adds selected clip to markers"
+    },
+    {
+      "command": "shift+m",
+      "action": "check markers",
+      "info": "Opens markers modal where you can select marker"
     },
     {
       "command": "shift+<",
@@ -61,17 +76,22 @@
       "info": "In markers mode it deletes all markers"
     },
     {
-      "command": "ctrl+h",
+      "command": "shift+h",
       "action": "redirect to home page",
       "info": "Available in every context"
     },
     {
-      "command": "ctrl+e",
+      "command": "e",
       "action": "redirect to editor page",
       "info": "Available in every context"
     },
     {
-      "command": "ctrl+?",
+      "command": "c",
+      "action": "redirect to clips context",
+      "info": "Available in every context"
+    },
+    {
+      "command": "shift+?",
       "action": "redirect to help page",
       "info": "Available in every context"
     },
@@ -81,49 +101,34 @@
       "info": "Available in every context"
     },
     {
-      "command": "shift+l",
-      "action": "",
-      "info": ""
-    },
-    {
-      "command": "shift+d",
-      "action": "",
-      "info": ""
-    },
-    {
-      "command": "shift+m",
-      "action": "",
-      "info": ""
-    },
-    {
-      "command": "ctrl+c",
-      "action": "",
-      "info": ""
-    },
-    {
-      "command": "ctrl+m",
-      "action": "",
-      "info": ""
-    },
-    {
       "command": "0",
-      "action": "",
-      "info": ""
+      "action": "go to first frame of video",
+      "info": "In clips context it will select first clip"
     },
     {
-      "command": "ctrl+l",
-      "action": "",
-      "info": ""
-    },
-    {
-      "command": "ctrl+o",
-      "action": "",
-      "info": ""
+      "command": "shift+$",
+      "action": "go to last frame of video",
+      "info": "In clips context it will select last clip"
     },
     {
       "command": "space",
-      "action": "",
-      "info": ""
+      "action": "play selected video in clips",
+      "info": "Available only in clips context"
+    },
+    {
+      "command": "shift+d",
+      "action": "toggle dark mode",
+      "info": "Available only in every context"
+    },
+    {
+      "command": "ctrl+0",
+      "action": "opens your mp4 file",
+      "info": "Available only in every context"
+    },
+    {
+      "command": "escape",
+      "action": "go to main mode",
+      "info": "Available only in every context"
     }
   ]
 }

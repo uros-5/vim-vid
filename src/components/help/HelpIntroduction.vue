@@ -1,4 +1,9 @@
 <template>
+  <h1
+    class="text-xl lg:text-3xl text-slate-950 dark:text-slate-200 lg:leading-[2.1em] lg:text-justify selection:bg-green-700"
+  >
+    Quick introduction
+  </h1>
   <p
     class="text-xl lg:text-3xl text-slate-950 dark:text-slate-200 lg:leading-[2.1em] lg:text-justify selection:bg-green-700"
   >
@@ -16,7 +21,9 @@
     >).<br />
     In future releases we will enable modifying default keybindings through simple JSON file. For
     now check table down bellow or read source code(<i>TypeScript</i>)
-    <a class="underline underline-offset-4" href="https://github.com">here</a>
+    <a class="underline underline-offset-4" href="https://github.com">here</a>.
+    <br />
+    If you are using Vimium in browser then be sure to disable it for this app.
   </p>
 </template>
 

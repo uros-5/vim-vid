@@ -7,7 +7,7 @@
       type="file"
       accept="video/mp4"
     />
-    <span class="fill-black dark:fill-white"></span>
+    <span class="fill-black dark:fill-white translate-y-0 opacity-50"></span>
   </div>
 </template>
 
