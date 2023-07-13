@@ -1,6 +1,6 @@
 import { defineStore, type _ActionsTree } from 'pinia'
 import keys from 'ctrl-keys'
-import { Clips, EditorAction, EditorContext, Markers, type StorageSave } from './vimvid-types'
+import { Clips, EditorContext, Markers, type StorageSave } from './vimvid-types'
 import { ref, watch } from 'vue'
 import router from '@/router'
 import { z } from 'zod'
@@ -11,8 +11,6 @@ export const vimvid = defineStore('vimvid', () => {
   const currentId = ref(0)
   const currentContext = ref(EditorContext.Home as EditorContext)
   const lastCommand = ref("");
-  const version = '0.0.0'
-  const isSaved = ref(false)
   const ls = readLocalStorage();
   const darkMode = ref(false);
 
@@ -30,6 +28,7 @@ export const vimvid = defineStore('vimvid', () => {
     setTimeout(() => {
       if (old == last) {
         lastCommand.value = "";
+        last = 0;
       }
     }, 3000)
   }, { deep: true })
@@ -47,7 +46,6 @@ export const vimvid = defineStore('vimvid', () => {
           clipsStore.previous();
           break;
         }
-        default: return;
       }
     })
     .add('l', () => {
@@ -61,7 +59,6 @@ export const vimvid = defineStore('vimvid', () => {
           clipsStore.next();
           break;
         }
-        default: return;
       }
     })
     .add('k', () => {
@@ -71,8 +68,21 @@ export const vimvid = defineStore('vimvid', () => {
           clipsStore.k();
           break;
         }
-        default: return;
+        case EditorContext.Markers: {
+          markersStore.k();
+          break;
+        }
       }
+    })
+    .add('j', () => {
+      lastCommand.value = "k";
+      switch (currentContext.value) {
+        case EditorContext.Markers: {
+          markersStore.j();
+          break;
+        }
+      }
+
     })
     .add('i', () => {
       lastCommand.value = "i";
@@ -82,7 +92,11 @@ export const vimvid = defineStore('vimvid', () => {
             clipsStore.m(true);
             break;
           }
-        default: return;
+        case EditorContext.Markers: {
+
+          markersStore.move(true);
+          break;
+        }
       }
     })
     .add('a', () => {
@@ -93,37 +107,46 @@ export const vimvid = defineStore('vimvid', () => {
             clipsStore.m(false);
             break;
           }
-        default: return;
+        case EditorContext.Markers: {
+          markersStore.move(false);
+          break;
+        }
       }
     })
     .add(',', () => {
       lastCommand.value = ",";
       switch (currentContext.value) {
-        case EditorContext.Main: {
-          clipsStore.volumeDown();
+        case EditorContext.Clips: {
+          clipsStore.volumeDown(false);
           break;
         }
-        default: return;
+        case EditorContext.Main: {
+          clipsStore.volumeDown(true);
+          break;
+        }
       }
     })
     .add('.', () => {
       lastCommand.value = ".";
       switch (currentContext.value) {
-        case EditorContext.Main: {
-          clipsStore.volumeUp();
+        case EditorContext.Clips: {
+          clipsStore.volumeUp(false);
           break;
         }
-        default: return;
+        case EditorContext.Main: {
+          clipsStore.volumeUp(true);
+          break;
+        }
       }
     })
     .add('m', () => {
       lastCommand.value = "m";
       switch (currentContext.value) {
-        case EditorContext.Markers: {
+        case EditorContext.Main:
+        case EditorContext.Clips: {
           markersStore.m();
           break;
         }
-        default: return;
       }
     })
     .add('o', () => {
@@ -133,7 +156,6 @@ export const vimvid = defineStore('vimvid', () => {
           clipsStore.o();
           break;
         }
-        default: return;
       }
     })
     .add('0', () => {
@@ -142,9 +164,14 @@ export const vimvid = defineStore('vimvid', () => {
         case EditorContext.Clips:
           {
             clipsStore.selected = 0;
+      break;
 
           }
-        default: break;
+        case EditorContext.Main:
+          {
+            clipsStore.zero();
+            break;
+          }
       }
     })
     .add('shift+$', () => {
@@ -153,8 +180,13 @@ export const vimvid = defineStore('vimvid', () => {
         case EditorContext.Clips:
           {
             clipsStore.selected = clipsStore.clips.length - 1;
+            break;
           }
-        default: break;
+        case EditorContext.Main: {
+          clipsStore.lastFrame();
+          break;
+        }
+
       }
 
     })
@@ -171,21 +203,22 @@ export const vimvid = defineStore('vimvid', () => {
       switch (currentContext.value) {
         case EditorContext.Main: clipsStore.x(true, false); break;
         case EditorContext.Clips: clipsStore.x(true, true); break;
-        default: break;
+        case EditorContext.Markers: markersStore.x(); break;
       }
     })
     .add('shift+x', () => {
       lastCommand.value = "shift+x";
-      clipsStore.x(false);
+      switch (currentContext.value) {
+        case EditorContext.Main:
+        case EditorContext.Clips:
+          clipsStore.x(false); break;
+        case EditorContext.Markers: markersStore.X();
+      }
+
     })
     .add('shift+h', (e) => {
-      lastCommand.value = "shift+h";
-      router.push('/')
-      currentContext.value = EditorContext.Home;
-    })
-    .add('shift+h', (e) => {
-      lastCommand.value = "shift+h";
       e?.preventDefault();
+      lastCommand.value = "shift+h";
       router.push('/')
       currentContext.value = EditorContext.Home;
     })
@@ -194,7 +227,7 @@ export const vimvid = defineStore('vimvid', () => {
       lastCommand.value = "e";
       router.push('/editor');
       currentContext.value = EditorContext.Main;
-      window.scrollTo(0, 0)
+      window.scrollTo(0, 0);
     })
     .add('shift+?', (e) => {
       lastCommand.value = "shift+?";
@@ -221,36 +254,38 @@ export const vimvid = defineStore('vimvid', () => {
       lastCommand.value = "ctrl+o";
       if (e) clipsStore.open(e);
     })
-    .add('shift+m', () => {
+    .add('shift+m', (e) => {
+      e?.preventDefault();
       lastCommand.value = "shift+m";
+      markersStore.safeMarkers();
+      if (currentContext.value == EditorContext.Markers) {
+        currentContext.value = EditorContext.Main;
+      }
+      else {
+        window.scrollTo(0, 0);
+        currentContext.value = EditorContext.Markers;
+      }
     })
     .add('c', (e) => {
       e?.preventDefault();
       lastCommand.value = "c";
       currentContext.value = EditorContext.Clips;
+      clipsStore.selected = clipsStore.clips.length - 1;
     })
-    .add('ctrl+m', () => {
-      // currentContext.value = EditorContext.Markers;
-    })
-    .add('0', () => { })
     .add('escape', (e) => {
       lastCommand.value = "escape";
       e?.preventDefault();
       currentContext.value = EditorContext.Main;
     })
-    .add('enter', (e) => {
+    .add('space', (e) => {
       e?.preventDefault();
-      lastCommand.value = "enter";
+      lastCommand.value = "space";
       switch (currentContext.value) {
         case EditorContext.Clips: {
           clipsStore.enter();
           break;
         }
-        default: break;
       }
-    })
-    .add('space', () => {
-      return;
     })
 
   window.addEventListener('keydown', handler.handle)
@@ -259,8 +294,6 @@ export const vimvid = defineStore('vimvid', () => {
     currentId,
     currentContext,
     lastCommand,
-    version,
-    isSaved,
     darkMode,
   }
 })

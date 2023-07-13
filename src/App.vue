@@ -2,6 +2,7 @@
 import { RouterView, useRoute } from 'vue-router'
 import MainHeader from './components/icons/MainHeader.vue'
 import HiddenInput from './components/HiddenInput.vue'
+import MarkersModal from '@/components/editor/MarkersModal.vue'
 import { vimvid } from './stores/vimvid'
 import { onMounted } from 'vue'
 import { useClips } from './stores/clips'
@@ -41,6 +42,7 @@ function isRoute(): boolean {
       </transition>
     </RouterView>
     <HiddenInput />
+    <MarkersModal />
   </div>
 </template>
 

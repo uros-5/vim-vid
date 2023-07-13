@@ -18,7 +18,8 @@ export const useClips = defineStore("clips", () => {
   const clips = ref([] as Clips)
   const step = ref(3)
   const recordingClip = ref(emptyClip());
-  const volume = ref(1);
+  const actionVolume = ref(1);
+  const videoVolume = ref(1);
   const selected = ref(0);
   const deletedClip = ref(null as null | Clip)
   const otherVideo = ref(null as HTMLVideoElement | null)
@@ -51,7 +52,7 @@ export const useClips = defineStore("clips", () => {
       default: return;
     }
     const a = new Audio(audio);
-    a.volume = volume.value
+    a.volume = actionVolume.value
     a.play();
   }
 
@@ -65,9 +66,12 @@ export const useClips = defineStore("clips", () => {
     clips,
     step,
     recordingClip,
-    volume,
+    actionVolume,
+    videoVolume,
     selected,
     otherVideo,
+    deletedClip,
+
     h() {
       if (video.value) video.value.currentTime! -= step.value
     },
@@ -143,6 +147,16 @@ export const useClips = defineStore("clips", () => {
       }
 
     },
+    zero() {
+      if(video.value) {
+        video.value.currentTime = 0;
+      }
+    },
+    lastFrame() {
+      if(video.value) {
+        video.value.currentTime = video.value.duration;
+      }
+    },
     async y() {
       if (clips.value.length > 0) {
         let command = `#!/usr/bin/sh \nmkdir vimvid\nmkdir vimvid/clips vimvid/merged\n\nvidsrc=""\next=""\n`;
@@ -163,17 +177,23 @@ export const useClips = defineStore("clips", () => {
         await navigator.clipboard.writeText(command);
       }
     },
-    volumeUp() {
-      volume.value += 0.2;
-      if (volume.value >= 1) {
-        volume.value = 1;
+    volumeUp(isVideo = true) {
+      if (!video.value) return;
+      let vol = isVideo ? videoVolume : actionVolume;
+      vol.value += 0.2;
+      if (vol.value >= 1) {
+        vol.value = 1;
       }
+      isVideo ? video.value.volume = vol.value : null;
     },
-    volumeDown() {
-      volume.value -= 0.2;
-      if (volume.value <= 0) {
-        volume.value = 0.1;
+    volumeDown(isVideo = true) {
+      if (!video.value) return;
+      let vol = isVideo ? videoVolume : actionVolume;
+      vol.value -= 0.1;
+      if (vol.value <= 0) {
+        vol.value = 0.1;
       }
+      isVideo ? video.value.volume = vol.value : null;
     },
     speedUp() {
       if (video.value) {
@@ -234,15 +254,17 @@ export const useClips = defineStore("clips", () => {
       if (clip) {
         mainStore.currentContext = EditorContext.Secondary;
         setTimeout(() => {
-          window.scrollTo(0,0);
+          window.scrollTo(0, 0);
           const t = clip.end - clip.start;
           video.value?.pause();
           otherVideo.value!.currentTime = clip.start;
           otherVideo.value!.play();
+          otherVideo.value!.controls = false;
           setTimeout(() => {
-              mainStore.currentContext = EditorContext.Main;
+            mainStore.currentContext = EditorContext.Main;
+            otherVideo.value!.controls = true;
           }, t * 1000)
-        },500);
+        }, 500);
       }
     }
   }
