@@ -1,7 +1,7 @@
 <template>
   <router-link :to="props.route">
     <p
-      class="text-3xl text-center mb-10 selection:bg-green-100 dark:selection:bg-green-700 text-slate-950 dark:text-slate-200"
+      class="text-2xl md:text-3xl lg:text-4xl text-center mb-10 selection:bg-green-100 dark:selection:bg-green-700 text-slate-950 dark:text-slate-200"
     >
       {{ props.text }}
     </p>
