@@ -11,6 +11,11 @@
 <script setup lang="ts">
 import HelpIntroduction from '@/components/help/HelpIntroduction.vue'
 import HelpTable from '@/components/help/HelpTable.vue'
+import { onMounted } from 'vue'
+
+onMounted(() => {
+  window.scroll({ top: 0, behavior: 'smooth' })
+})
 </script>
 
 <style scoped>
