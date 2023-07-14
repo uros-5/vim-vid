@@ -4,11 +4,12 @@
   >
     Created by <a class="underline" href="https://github.com/uros-5">uros-5</a>
   </p>
-  <InlineSvg @click="toggle" class="m-5 hover:cursor-pointer" src="src/assets/darkmodeicon.svg" />
+  <InlineSvg @click="toggle" class="m-5 hover:cursor-pointer" :src="darkmodeicon" />
 </template>
 
 <script setup lang="ts">
 import InlineSvg from 'vue-inline-svg'
+import darkmodeicon from '@/assets/darkmodeicon.svg'
 
 function toggle() {
   let a = document.querySelector('html')?.classList.toggle('dark')
